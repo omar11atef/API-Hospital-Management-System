@@ -2,9 +2,11 @@
 
 public interface IDoctorServices
 {
-    IEnumerable<Doctor> GetAllDoctors(CancellationToken cancellationToken);
-    Doctor? GetDoctorById(int id, CancellationToken cancellationToken);
-    Doctor? CreateDoctor(Doctor doctor, CancellationToken cancellationToken);
-    Doctor? UpdateDoctor(int id, Doctor doctor, CancellationToken cancellationToken);
-    bool DeleteDoctor(int id, CancellationToken cancellationToken);
+    Task<IEnumerable<Doctor>> GetAllDoctorsAsync(CancellationToken cancellationToken);
+    Task<IEnumerable<Doctor>> GetAllDoctorsExsitsAsync(CancellationToken cancellationToken);
+    Task<Doctor?> GetDoctorByIdAsync(int id, CancellationToken cancellationToken);
+    Task<Doctor?> CreateDoctorAsync(Doctor doctor, CancellationToken cancellationToken);
+    Task<Doctor?> UpdateDoctorAsync(int id, Doctor doctor, CancellationToken cancellationToken);
+    Task<bool> DeleteDoctorAsync(int id, CancellationToken cancellationToken);
+    Task<bool> IsDoctorExistsAsync(int id, CancellationToken cancellationToken);
 }

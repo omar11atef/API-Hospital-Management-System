@@ -20,12 +20,12 @@ namespace Hospital_Management_System.Persistence.Migrations
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Specialization = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Age = table.Column<int>(type: "int", nullable: false),
+                    DateOfBirth = table.Column<DateOnly>(type: "date", nullable: true),
                     AcademicDegree = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TotalHoursWorked = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     NationalId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateOnly>(type: "date", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>

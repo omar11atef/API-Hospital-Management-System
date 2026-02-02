@@ -22,7 +22,7 @@ namespace Hospital_Management_System.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Hospital_Management_System.Models.Doctor", b =>
+            modelBuilder.Entity("Hospital_Management_System.Entities.Doctor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -36,11 +36,11 @@ namespace Hospital_Management_System.Persistence.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
+                    b.Property<DateOnly>("CreatedAt")
+                        .HasColumnType("date");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly?>("DateOfBirth")
+                        .HasColumnType("date");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");

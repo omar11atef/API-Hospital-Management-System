@@ -1,8 +1,9 @@
 ﻿namespace Hospital_Management_System.Services;
 
-public class DoctorServices : IDoctorServices
+public class DoctorServices (ApplicationDbContext context) : IDoctorServices
 {
-    private static readonly List<Doctor> _doctor = [
+    private readonly ApplicationDbContext _context = context;
+    /*private static readonly List<Doctor> _context = [
         new Doctor
         {
             Id = 1,
@@ -27,41 +28,40 @@ public class DoctorServices : IDoctorServices
             PhoneNumber = "555-5678",
             NationalId = "B987654321"
         }
-    ];
+    ];*/
 
-    public IEnumerable<Doctor> GetAllDoctors(CancellationToken cancellationToken =default)
+    public async Task<IEnumerable<Doctor>> GetAllDoctorsAsync(CancellationToken cancellationToken =default)
     {
-        return _doctor.Where(d => !d.IsDeleted);
+        return await _context.Doctors
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
-    public Doctor? GetDoctorById(int id, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Doctor>> GetAllDoctorsExsitsAsync(CancellationToken cancellationToken = default)
     {
-        var doctor = _doctor.FirstOrDefault(d => d.Id == id && !d.IsDeleted);
-        if (doctor == null)
-            return null;
-        return doctor;
+        return await _context.Doctors
+            .AsNoTracking()
+            .Where(d => d.IsDeleted)
+            .ToListAsync(cancellationToken);
     }
 
-    public Doctor? CreateDoctor(Doctor doctor, CancellationToken cancellationToken = default)
+    public async Task <Doctor?> GetDoctorByIdAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return await _context.Doctors.FindAsync(id, cancellationToken);
+    }
+    
+    public async Task<Doctor?> CreateDoctorAsync(Doctor doctor, CancellationToken cancellationToken = default)
     {
         if (doctor is null)
-            return null;
-
-        // Auto-Increment ID Logic
-        int newId = _doctor.Any() ? _doctor.Max(d => d.Id) + 1 : 1;
-        doctor.Id = newId;
-
-        // Set Defaults
-        doctor.IsDeleted = false;
-        doctor.CreatedAt = DateOnly.FromDateTime(DateTime.Now);
-
-        _doctor.Add(doctor);
+            return null!;
+        await _context.AddAsync(doctor, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
         return doctor;
     }
-
-    public Doctor? UpdateDoctor(int id, Doctor doctor, CancellationToken cancellationToken = default)
+    
+    public async Task<Doctor?> UpdateDoctorAsync(int id, Doctor doctor, CancellationToken cancellationToken = default)
     {
-        var DoctorToUpdate = GetDoctorById(id);
+        var DoctorToUpdate = await GetDoctorByIdAsync(id);
         if (DoctorToUpdate is null)
             return null;
         if (doctor is null)
@@ -75,16 +75,30 @@ public class DoctorServices : IDoctorServices
         DoctorToUpdate.TotalHoursWorked = doctor.TotalHoursWorked;
         DoctorToUpdate.PhoneNumber = doctor.PhoneNumber;
         DoctorToUpdate.NationalId = doctor.NationalId;
+        
+        await _context.SaveChangesAsync(cancellationToken);
 
         return DoctorToUpdate;
     }
-
-    public bool DeleteDoctor(int id, CancellationToken cancellationToken =default)
+    
+    public async Task<bool> DeleteDoctorAsync(int id, CancellationToken cancellationToken =default)
     {
-        var doctor = GetDoctorById(id);
+        var doctor = await GetDoctorByIdAsync(id);
         if (doctor is null)
             return false;
-        _doctor.Remove(doctor);
+        _context.Remove(doctor);
+        await _context.SaveChangesAsync(cancellationToken);
         return true;
     }
+
+    public async Task<bool> IsDoctorExistsAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var doctor = await GetDoctorByIdAsync(id);
+        if(doctor is null)
+            return false;
+        doctor.IsDeleted = !doctor.IsDeleted;
+        await _context.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
 }
