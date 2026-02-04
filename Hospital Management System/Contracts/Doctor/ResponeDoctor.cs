@@ -1,4 +1,4 @@
-﻿namespace Hospital_Management_System.Contracts.Respones;
+﻿namespace Hospital_Management_System.Contracts.Doctor;
 
 public record ResponeDoctor
 (

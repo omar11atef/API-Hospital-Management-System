@@ -1,9 +1,7 @@
-﻿
-
-using System;
+﻿using System;
 using System.Globalization;
 
-namespace Hospital_Management_System.Contracts.Validations;
+namespace Hospital_Management_System.Contracts.Doctor;
 
 public class DoctorRequestValidation :AbstractValidator<RequestDoctor>
 {

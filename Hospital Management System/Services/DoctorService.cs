@@ -1,6 +1,6 @@
 ﻿namespace Hospital_Management_System.Services;
 
-public class DoctorServices (ApplicationDbContext context) : IDoctorServices
+public class DoctorService (ApplicationDbContext context) : IDoctorService
 {
     private readonly ApplicationDbContext _context = context;
     /*private static readonly List<Doctor> _context = [

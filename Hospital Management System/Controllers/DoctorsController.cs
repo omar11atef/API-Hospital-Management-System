@@ -2,13 +2,14 @@
 
 [Route("api/[controller]")]
 [ApiController]
-public class DoctorsController(IDoctorServices doctorServices) : ControllerBase
+public class DoctorsController(IDoctorService doctorServices) : ControllerBase
 {
     
-    private readonly IDoctorServices _doctorServices= doctorServices;
+    private readonly IDoctorService _doctorServices= doctorServices;
 
     // GET All Doctors
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetAllDoctors(CancellationToken cancellationToken = default)
     {
         var doctors = await _doctorServices.GetAllDoctorsAsync(cancellationToken);

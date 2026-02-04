@@ -1,6 +1,6 @@
 ﻿namespace Hospital_Management_System.Services;
 
-public interface IDoctorServices
+public interface IDoctorService
 {
     Task<IEnumerable<Doctor>> GetAllDoctorsAsync(CancellationToken cancellationToken);
     Task<IEnumerable<Doctor>> GetAllDoctorsExsitsAsync(CancellationToken cancellationToken);

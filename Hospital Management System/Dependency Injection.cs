@@ -2,6 +2,7 @@
 using MapsterMapper;
 using System.Reflection;
 
+
 namespace Hospital_Management_System;
 
 public static class Dependency_Injection 
@@ -21,7 +22,11 @@ public static class Dependency_Injection
         var connectionString = configuration.GetConnectionString("DefaultConnection") ??
               throw new InvalidOperationException("Connect String 'DefaultConnection' Has Not Found");
         services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
-        services.AddScoped<IDoctorServices, DoctorServices>();
+        services.AddScoped<IDoctorService, DoctorService>();
+        services.AddScoped<IAuthorService, AuthorService>();
+
+        // Add Author Token Config
+        services.AddAuthorTokenConfig();
 
 
 
@@ -42,6 +47,39 @@ public static class Dependency_Injection
         services
             .AddFluentValidationAutoValidation()
             .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        return services;
+    }
+
+    public static IServiceCollection AddAuthorTokenConfig(this IServiceCollection services)
+    {
+       
+        services
+          .AddIdentity<ApplicationUser, IdentityRole>()
+          .AddEntityFrameworkStores<ApplicationDbContext>();
+        services.AddSingleton<IJwtProvider, JwtProvider>();
+        services.AddAuthentication(options =>
+        {
+
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+
+            .AddJwtBearer(options => 
+            {
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+
+
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidIssuer = "HospitalManagementSystem",
+                    ValidAudience = "HospitalManagementSystemClient",
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("HQ+xNCxTvq4QcdlfPcWbjQxsMq#/lXGvdW7/h/P5vjM="))
+                };
+            });
+
         return services;
     }
 

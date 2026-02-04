@@ -3,6 +3,9 @@ using Hospital_Management_System;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDependencies(builder.Configuration);
+/*builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();*/
 
 var app = builder.Build();
 
@@ -14,8 +17,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
+//app.MapIdentityApi<ApplicationUser>();
 
 app.MapControllers();
 
