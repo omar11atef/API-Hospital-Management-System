@@ -1,4 +1,6 @@
-﻿namespace Hospital_Management_System.Services;
+﻿using Hospital_Management_System.Authentication;
+
+namespace Hospital_Management_System.Services;
 
 public class AuthorService(UserManager<ApplicationUser> userManager, IJwtProvider jwtProvider) : IAuthorService
 {

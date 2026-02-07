@@ -1,10 +1,14 @@
-﻿
-namespace Hospital_Management_System.Services;
+﻿using Microsoft.Extensions.Options;
+using System.Text;
 
-public class JwtProvider : IJwtProvider
+namespace Hospital_Management_System.Authentication;
+
+public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
 {
+    private readonly JwtOptions _options = options.Value;
     public (string token, int expiry) GentrateJwtToken(ApplicationUser applicationUser)
     {
+       
         // Cliams
         var claims = new[]
         {
@@ -14,21 +18,21 @@ public class JwtProvider : IJwtProvider
             new Claim(ClaimTypes.Name, applicationUser.UserName!)
         };
         // Key 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("HQ+xNCxTvq4QcdlfPcWbjQxsMq#/lXGvdW7/h/P5vjM="));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.key));
         // Credentials
         var cred  = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         // Expiry
-        var expity = 30;
+        //var expity = 30;
         //Token
 
         var token =new JwtSecurityToken(
-            issuer: "HospitalManagementSystem",
-            audience: "HospitalManagementSystemClient",
+            issuer: _options.issuer,
+            audience: _options.audience,
             claims: claims,
-            expires: DateTime.Now.AddMinutes(expity),
+            expires: DateTime.Now.AddMinutes(_options.expires),
             signingCredentials: cred
             );
         // return 
-        return (new JwtSecurityTokenHandler().WriteToken(token), expity * 60);
+        return (new JwtSecurityTokenHandler().WriteToken(token), _options.expires * 60);
     }
 }

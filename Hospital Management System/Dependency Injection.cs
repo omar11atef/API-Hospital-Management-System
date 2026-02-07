@@ -1,5 +1,7 @@
 ﻿using FluentValidation.AspNetCore;
+using Hospital_Management_System.Authentication;
 using MapsterMapper;
+using Microsoft.Extensions.Options;
 using System.Reflection;
 
 
@@ -26,7 +28,7 @@ public static class Dependency_Injection
         services.AddScoped<IAuthorService, AuthorService>();
 
         // Add Author Token Config
-        services.AddAuthorTokenConfig();
+        services.AddAuthorTokenConfig(configuration);
 
 
 
@@ -50,13 +52,17 @@ public static class Dependency_Injection
         return services;
     }
 
-    public static IServiceCollection AddAuthorTokenConfig(this IServiceCollection services)
+    public static IServiceCollection AddAuthorTokenConfig(this IServiceCollection services ,
+        IConfiguration configuration)
     {
        
         services
           .AddIdentity<ApplicationUser, IdentityRole>()
           .AddEntityFrameworkStores<ApplicationDbContext>();
         services.AddSingleton<IJwtProvider, JwtProvider>();
+        
+       services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.OptionName));
+        var JwtSetting = configuration.GetSection(JwtOptions.OptionName).Get<JwtOptions>();
         services.AddAuthentication(options =>
         {
 
@@ -69,14 +75,12 @@ public static class Dependency_Injection
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-
-
                     ValidateIssuerSigningKey = true,
                     ValidateIssuer = true,
                     ValidateAudience = true,
-                    ValidIssuer = "HospitalManagementSystem",
-                    ValidAudience = "HospitalManagementSystemClient",
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("HQ+xNCxTvq4QcdlfPcWbjQxsMq#/lXGvdW7/h/P5vjM="))
+                    ValidIssuer = JwtSetting?.issuer ,
+                    ValidAudience = JwtSetting?.audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtSetting?.key!))
                 };
             });
 

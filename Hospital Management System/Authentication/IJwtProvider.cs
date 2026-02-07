@@ -1,4 +1,4 @@
-﻿namespace Hospital_Management_System.Services;
+﻿namespace Hospital_Management_System.Authentication;
 
 public interface IJwtProvider
 {

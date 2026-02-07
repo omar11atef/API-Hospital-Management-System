@@ -19,6 +19,7 @@ global using Microsoft.AspNetCore.Authorization;
 global using System.Security.Claims;
 global using System.Text;
 
+global using Hospital_Management_System.Authentication;
 global using Hospital_Management_System.Entities;
 global using Hospital_Management_System.Services;
 global using Hospital_Management_System.Contracts.Requests;
