@@ -26,6 +26,7 @@ public static class Dependency_Injection
         services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
         services.AddScoped<IDoctorService, DoctorService>();
         services.AddScoped<IAuthorService, AuthorService>();
+        services.AddScoped<IPatientsServices, PatientsService>();   
 
         // Add Author Token Config
         services.AddAuthorTokenConfig(configuration);

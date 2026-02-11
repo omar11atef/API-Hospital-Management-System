@@ -1,19 +1,24 @@
-﻿namespace Hospital_Management_System.Controllers;
+﻿using Azure;
+using Hospital_Management_System.Entities;
+
+namespace Hospital_Management_System.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+
 public class DoctorsController(IDoctorService doctorServices) : ControllerBase
 {
     
     private readonly IDoctorService _doctorServices= doctorServices;
+    [Authorize]
 
     // GET All Doctors
     [HttpGet]
-    [Authorize]
     public async Task<IActionResult> GetAllDoctors(CancellationToken cancellationToken = default)
     {
         var doctors = await _doctorServices.GetAllDoctorsAsync(cancellationToken);
-        var respone = doctors.Adapt<IEnumerable<Doctor>>();
+        var respone = doctors.Adapt<IEnumerable<ResponeDoctor>>();
+
         return Ok(respone);
     }
     // GET All Doctors Exsits
@@ -21,7 +26,7 @@ public class DoctorsController(IDoctorService doctorServices) : ControllerBase
     public async Task<IActionResult> GetAllDoctorsExsits(CancellationToken cancellationToken = default)
     {
         var doctors = await _doctorServices.GetAllDoctorsExsitsAsync(cancellationToken);
-        var respone = doctors.Adapt<IEnumerable<Doctor>>();
+        var respone = doctors.Adapt<IEnumerable<ResponeDoctor>>();
         return Ok(respone);
     }
 
@@ -34,8 +39,8 @@ public class DoctorsController(IDoctorService doctorServices) : ControllerBase
         var doctor = await _doctorServices.GetDoctorByIdAsync(id, cancellationToken);
         if (doctor == null)
             return NotFound();
-        
-        return Ok(doctor);
+        var respone = doctor.Adapt<IEnumerable<ResponeDoctor>>();
+        return Ok(respone);
         
     }
     
@@ -50,8 +55,7 @@ public class DoctorsController(IDoctorService doctorServices) : ControllerBase
         if (createdDoctor == null)
             return BadRequest();
 
-        return CreatedAtAction(nameof(GetDoctorById), new { id = createdDoctor.Id }, createdDoctor);
-       
+        return CreatedAtAction(nameof(GetDoctorById), new { id = createdDoctor.Id }, createdDoctor.Adapt<ResponeDoctor>());
     }
     
     //Put Update Doctor

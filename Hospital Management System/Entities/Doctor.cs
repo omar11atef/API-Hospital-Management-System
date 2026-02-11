@@ -1,13 +1,13 @@
 ﻿namespace Hospital_Management_System.Entities;
 
-public abstract class BaseEntity
+public abstract class BaseEntity 
 {
     public int Id { get; set; }
     public DateOnly CreatedAt { get; set; } = DateOnly.FromDateTime(DateTime.Now);
     public bool IsDeleted { get; set; } = false;
 }
 
-public sealed class Doctor : BaseEntity
+public sealed class Doctor : BaseEntity 
 {
     public string Name { get; set; } = string.Empty;
     public string? Specialization { get; set; }

@@ -18,6 +18,7 @@ global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.AspNetCore.Authorization;
 global using System.Security.Claims;
 global using System.Text;
+global using Microsoft.AspNetCore.Http.HttpResults;
 
 global using Hospital_Management_System.Authentication;
 global using Hospital_Management_System.Entities;
@@ -25,3 +26,6 @@ global using Hospital_Management_System.Services;
 global using Hospital_Management_System.Contracts.Requests;
 global using Hospital_Management_System.Persistence;
 global using Hospital_Management_System.Contracts.Authorization;
+global using Hospital_Management_System.Contracts.Doctor;
+global using Hospital_Management_System.Contracts.Patient;
+

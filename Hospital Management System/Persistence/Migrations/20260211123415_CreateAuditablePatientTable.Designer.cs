@@ -4,6 +4,7 @@ using Hospital_Management_System.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hospital_Management_System.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260211123415_CreateAuditablePatientTable")]
+    partial class CreateAuditablePatientTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -148,104 +151,6 @@ namespace Hospital_Management_System.Persistence.Migrations
                     b.ToTable("Doctors");
                 });
 
-            modelBuilder.Entity("Hospital_Management_System.Entities.PatientRooms", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CheckInDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("CheckOutDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifiedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PatientId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RelatedVisitId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoomId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("TotalCost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PatientId");
-
-                    b.HasIndex("RelatedVisitId");
-
-                    b.HasIndex("RoomId");
-
-                    b.ToTable("PatientRooms");
-                });
-
-            modelBuilder.Entity("Hospital_Management_System.Entities.PatientVisit", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("DoctorId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifiedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PatientId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("VisitDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("VisitType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DoctorId");
-
-                    b.HasIndex("PatientId");
-
-                    b.ToTable("PatientVisits");
-                });
-
             modelBuilder.Entity("Hospital_Management_System.Entities.Patients", b =>
                 {
                     b.Property<int>("Id")
@@ -277,7 +182,7 @@ namespace Hospital_Management_System.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<decimal>("MaxMedicalExpenses")
+                    b.Property<decimal>("Max_Medical_Expenses")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("ModifiedAt")
@@ -314,50 +219,6 @@ namespace Hospital_Management_System.Persistence.Migrations
                         {
                             t.HasCheckConstraint("CK_Patient_NationalId_Numeric", "[NationalId] NOT LIKE '%[^0-9]%'");
                         });
-                });
-
-            modelBuilder.Entity("Hospital_Management_System.Entities.Rooms", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsOccupied")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("LastOpen")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifiedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("PricePerDay")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("RoomNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Rooms");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -493,48 +354,6 @@ namespace Hospital_Management_System.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Hospital_Management_System.Entities.PatientRooms", b =>
-                {
-                    b.HasOne("Hospital_Management_System.Entities.Patients", "Patient")
-                        .WithMany("PatientRooms")
-                        .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Hospital_Management_System.Entities.PatientVisit", "RelatedVisit")
-                        .WithMany()
-                        .HasForeignKey("RelatedVisitId");
-
-                    b.HasOne("Hospital_Management_System.Entities.Rooms", "Room")
-                        .WithMany("PatientRooms")
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Patient");
-
-                    b.Navigation("RelatedVisit");
-
-                    b.Navigation("Room");
-                });
-
-            modelBuilder.Entity("Hospital_Management_System.Entities.PatientVisit", b =>
-                {
-                    b.HasOne("Hospital_Management_System.Entities.Doctor", "Doctor")
-                        .WithMany()
-                        .HasForeignKey("DoctorId");
-
-                    b.HasOne("Hospital_Management_System.Entities.Patients", "Patient")
-                        .WithMany("Visits")
-                        .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Doctor");
-
-                    b.Navigation("Patient");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -584,18 +403,6 @@ namespace Hospital_Management_System.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Hospital_Management_System.Entities.Patients", b =>
-                {
-                    b.Navigation("PatientRooms");
-
-                    b.Navigation("Visits");
-                });
-
-            modelBuilder.Entity("Hospital_Management_System.Entities.Rooms", b =>
-                {
-                    b.Navigation("PatientRooms");
                 });
 #pragma warning restore 612, 618
         }

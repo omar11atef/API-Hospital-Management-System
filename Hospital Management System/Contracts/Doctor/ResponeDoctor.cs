@@ -7,6 +7,6 @@ public record ResponeDoctor
     string Address,
     int Age,
     string AcademicDegree,
-    string PhoneNumber,
+    string Phone,
     string NationalId
 );
