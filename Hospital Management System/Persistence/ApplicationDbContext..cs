@@ -5,12 +5,27 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     public DbSet<Doctor> Doctors { get; set; }
-    public DbSet<Patients> Patients { get; set; }
-    public DbSet<Rooms> Rooms { get; set; }
-    public DbSet<PatientRooms> PatientRooms { get; set; }
+    public DbSet<Patient> Patients { get; set; }
+    public DbSet<Room> Rooms { get; set; }
+    public DbSet<PatientRoom> PatientRooms { get; set; }
     public DbSet<PatientVisit> PatientVisits { get; set; }
+    public DbSet<Department> Departments { get; set; }
+    public DbSet<Appointment> Appointments { get; set; }
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Select All FK where OnDelete is --> Cascade
+        var CascadeFK = modelBuilder.Model
+            .GetEntityTypes()
+            .SelectMany(x => x.GetForeignKeys())
+            .Where(f => f.DeleteBehavior == DeleteBehavior.Cascade && !f.IsOwnership);
+
+        // Change Value --> Restrict
+        foreach (var f in CascadeFK)
+        {
+            f.DeleteBehavior = DeleteBehavior.Restrict;
+        }
         //modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);

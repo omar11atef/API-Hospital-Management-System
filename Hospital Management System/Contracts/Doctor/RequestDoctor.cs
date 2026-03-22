@@ -6,8 +6,20 @@ public record RequestDoctor
     string Specialization ,
     string Address,
     DateOnly? DateOfBirth,
+    string Gender,
+    string? Email,
     string AcademicDegree,
     string PhoneNumber ,
-    string NationalId ,
-    DateOnly? CreatedAt 
+    string NationalId 
 );
+
+public record DoctorAppointment
+(
+    int AppointmentId,
+    string PatientName,
+    string AppointmentDate,
+    string Status
+);
+
+
+

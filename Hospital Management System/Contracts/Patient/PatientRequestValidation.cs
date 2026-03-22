@@ -16,7 +16,10 @@ public class PatientRequestValidation : AbstractValidator<RequestPatient>
             .Matches(@"^\+?[1-9]\d{1,14}$").WithMessage("Phone number must be in a valid format.");
 
         RuleFor(x => x.Gender)
-            .NotEmpty().WithMessage("Select From Female=0 , Male =1");
+            .NotEmpty().WithMessage("Gender is required.")
+            .Must(g => g == "Male" || g == "Female")
+            .WithMessage("Gender must be either 'Male' or 'Female'.");
+
 
     }
 

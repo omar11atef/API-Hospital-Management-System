@@ -1,11 +1,4 @@
-﻿using FluentValidation.AspNetCore;
-using Hospital_Management_System.Authentication;
-using MapsterMapper;
-using Microsoft.Extensions.Options;
-using System.Reflection;
-
-
-namespace Hospital_Management_System;
+﻿namespace Hospital_Management_System;
 
 public static class Dependency_Injection 
 {
@@ -20,18 +13,35 @@ public static class Dependency_Injection
             .AddMaspterConfig()
             .AddFluentValidationConfig();
 
+        // CROS:
+        var config = configuration.GetSection("AllowedOrigin").Get<string[]>();
+        services.AddCors(options =>
+            options.AddDefaultPolicy(builder =>
+            builder
+                .WithOrigins(config!)
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+            )
+        );
+
+        
+
         // Add Connection String :
         var connectionString = configuration.GetConnectionString("DefaultConnection") ??
               throw new InvalidOperationException("Connect String 'DefaultConnection' Has Not Found");
         services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
         services.AddScoped<IDoctorService, DoctorService>();
         services.AddScoped<IAuthorService, AuthorService>();
-        services.AddScoped<IPatientsServices, PatientsService>();   
+        services.AddScoped<IPatientsServices, PatientsService>();
+        services.AddScoped<IDepartmentService, DepartmentService>();
+        services.AddScoped<IAppointmentService, AppointmentService>();
 
+
+        // Add Global Exception Handler
+        services.AddExceptionHandler<GlobalExceptionHandler>();
+        services.AddProblemDetails();
         // Add Author Token Config
         services.AddAuthorTokenConfig(configuration);
-
-
 
         return services;
     }

@@ -4,7 +4,7 @@ public record ResponePatient
 (
       int id ,
       string Name,
-      Gender Gender,
+      string Gender,
       DateOnly DateOfBirth,
       string Address,
       string PhoneNumber,
@@ -15,3 +15,10 @@ public record ResponePatient
 );
 
 public record UpdateExpensesRequest(decimal Amount);
+
+public sealed record PatientAppointmentsResponse(
+    int      PatientId,
+    string   PatientName,
+    string   DepartmentName,
+    IEnumerable<PatientAppointment>  Appointments
+);

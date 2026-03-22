@@ -1,50 +1,77 @@
-﻿namespace Hospital_Management_System.Services;
+﻿using Hospital_Management_System.Entities;
+using System.Numerics;
+
+namespace Hospital_Management_System.Services;
 
 public class PatientsService(ApplicationDbContext context) : IPatientsServices
 {
     private readonly ApplicationDbContext _context = context;
-    public async Task<IEnumerable<Patients>> GetAllPatientsAsync(CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<Patient>>> GetAllPatientsAsync(CancellationToken cancellationToken)
     {
-        return await _context.Patients
+        var result = await _context.Patients
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+        return Result.Success<IEnumerable<Patient>>(result);
     }
-    public async Task<IEnumerable<Patients>> GetAllPatientDeletedAsync(CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<Patient>>> GetAllPatientDeletedAsync(CancellationToken cancellationToken)
     {
-        return await _context.Patients
+        var result= await _context.Patients
             .Where(p => p.IsDeleted)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+        return Result.Success<IEnumerable<Patient>>(result);
     }
-    public async Task<IEnumerable<Patients>> GetAllPatientNotDeletedAsync(CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<Patient>>> GetAllPatientNotDeletedAsync(CancellationToken cancellationToken)
     {
-        return await _context.Patients
-            //.Where(p => !p.IsDeleted)
+        var result = await _context.Patients
             .Where(p => p.IsDeleted == false)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+        return Result.Success<IEnumerable<Patient>>(result);
     }
-    public async Task<Patients?> GetPatientByIdAsync(int id, CancellationToken cancellationToken)
+    public async Task<Result<ResponePatient>> GetPatientByIdAsync(int id, CancellationToken cancellationToken)
     {
-        return await _context.Patients.FindAsync(id, cancellationToken);
+        var result = await _context.Patients.FindAsync(id, cancellationToken);
+        return result is not null
+           ? Result.Success(result.Adapt<ResponePatient>())
+           : Result.Failure<ResponePatient>(PatientErrors.PatientNotFound);
     }
-    public async Task<Patients?> CreatePatientAsync(Patients patient, CancellationToken cancellationToken = default)
+    public async Task<Result<ResponePatient>> CreatePatientAsync(int departmentId, RequestPatient patient, CancellationToken cancellationToken = default)
     {
-        if (patient is null)
-            return null;
+        var departmentExists = await _context.Departments
+              .AnyAsync(d => d.Id == departmentId, cancellationToken);
+        if (!departmentExists)
+            return Result.Failure<ResponePatient>(PatientErrors.DepartmentNotFound);
+
         var exists = await _context.Patients
                             .AnyAsync(x => x.NationalId == patient.NationalId, cancellationToken);
-        if (exists) return null;
+        if (exists) return Result.Failure<ResponePatient>(PatientErrors.DuplicateNationalId);
 
-        await _context.AddAsync(patient, cancellationToken);
+        var newpatient = patient.Adapt<Patient>();
+        newpatient.DepartmentId = departmentId;
+        await _context.AddAsync(newpatient, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
-        return patient;
+
+        var result = newpatient.Adapt<ResponePatient>();
+        return Result.Success(result);
     }
-    public async Task<bool> UpdatePatientAsync(int id, Patients patient, CancellationToken cancellationToken = default)
+    public async Task<Result<ResponePatient>> UpdatePatientAsync(int departmentId,int id, RequestPatient patient, CancellationToken cancellationToken = default)
     {
+        var departmentExists = await _context.Departments
+               .AnyAsync(d => d.Id == departmentId, cancellationToken);
+        if (!departmentExists)
+            return Result.Failure<ResponePatient>(PatientErrors.DepartmentNotFound);
+
         var existingPatient = await _context.Patients.FindAsync(id, cancellationToken);
         if (existingPatient is null)
-            return false;
+            return Result.Failure<ResponePatient>(PatientErrors.PatientNotFound); 
+
+        bool isDuplicateNationalId = await _context.Patients
+            .AnyAsync(d =>d.NationalId == patient.NationalId && d.Id != id, cancellationToken);
+        if (isDuplicateNationalId)
+            return Result.Failure<ResponePatient>(PatientErrors.DuplicateNationalId);
+
+        existingPatient.DepartmentId = departmentId;
         existingPatient.Name = patient.Name;
         existingPatient.DateOfBirth = patient.DateOfBirth;
         existingPatient.Address = patient.Address;
@@ -53,48 +80,38 @@ public class PatientsService(ApplicationDbContext context) : IPatientsServices
         existingPatient.Gender = patient.Gender;
         existingPatient.DiseaseName = patient.DiseaseName;
         await _context.SaveChangesAsync(cancellationToken);
-        return true;
+        return Result.Success(existingPatient.Adapt<ResponePatient>());
     }
-    public async Task<bool> DeletePatientAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Result> DeletePatientAsync(int id, CancellationToken cancellationToken = default)
     {
         var existingPatient = await _context.Patients.FindAsync(id, cancellationToken);
         if (existingPatient is null)
-            return false;
+            return Result.Failure(PatientErrors.PatientNotFound);
         existingPatient.IsDeleted = true;
         await _context.SaveChangesAsync(cancellationToken);
-        return true;
+        return Result.Success();
     }
-    public async Task<bool> TogglePatientExiteAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Result> TogglePatientExiteAsync(int id, CancellationToken cancellationToken = default)
     {
         var existingPatient = await _context.Patients.FindAsync(id, cancellationToken);
         if (existingPatient is null)
-            return false;
+            return Result.Failure(PatientErrors.PatientNotFound); 
         existingPatient.IsDeleted = !existingPatient.IsDeleted;
         await _context.SaveChangesAsync(cancellationToken);
-        return true;
+        return Result.Success(); 
     }
 
-    public async Task<(bool IsSuccess, string Message, decimal? NewAmount)> UpdateMaxMedicalExpensesAsync(
-    int id,
-    UpdateExpensesRequest newMaxMedicalExpenses,
-    CancellationToken cancellationToken = default)
+    public async Task<Result<decimal>> UpdateMaxMedicalExpensesAsync(int id, UpdateExpensesRequest request, CancellationToken cancellationToken = default)
     {
-        var existingPatient = await _context.Patients.FindAsync(new object[] { id }, cancellationToken);
-
+        var existingPatient = await _context.Patients.FindAsync(id, cancellationToken);
         if (existingPatient is null)
-        {
-            return (false, "Error: Patient not found.", null);
-        }
+            return Result.Failure<decimal>(PatientErrors.PatientNotFound);
 
-        if (newMaxMedicalExpenses.Amount <= 0)
-        {
-            return (false, "Error: Amount must be a positive number greater than zero.", null);
-        }
-        //(Apply Update)
-        existingPatient.MaxMedicalExpenses = newMaxMedicalExpenses.Amount;
+        if (request.Amount <= 0)
+            return Result.Failure<decimal>(PatientErrors.InvalidAmount);
 
+        existingPatient.MaxMedicalExpenses = request.Amount;
         await _context.SaveChangesAsync(cancellationToken);
-        // return success message with the new amount
-        return (true, "Success: Max Medical Expenses updated successfully.", existingPatient.MaxMedicalExpenses);
+        return Result.Success(existingPatient.MaxMedicalExpenses);
     }
 }

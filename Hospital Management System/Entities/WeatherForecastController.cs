@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Hospital_Management_System.Controllers
+namespace Hospital_Management_System.Entities
 {
     [ApiController]
     [Route("[controller]")]

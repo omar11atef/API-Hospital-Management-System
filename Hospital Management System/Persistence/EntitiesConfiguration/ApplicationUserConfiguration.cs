@@ -1,6 +1,6 @@
 ﻿namespace Hospital_Management_System.Persistence.EntitiesConfigrations;
 
-public class ApplicationUserConfigration : IEntityTypeConfiguration<ApplicationUser>
+public class ApplicationUserConfiguration : IEntityTypeConfiguration<ApplicationUser>
 {
     public void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {

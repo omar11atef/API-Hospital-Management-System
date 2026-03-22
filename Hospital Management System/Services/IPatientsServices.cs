@@ -2,15 +2,14 @@
 
 public interface IPatientsServices
 {
-    Task<IEnumerable<Patients>> GetAllPatientsAsync(CancellationToken cancellationToken);
-    Task<IEnumerable<Patients>> GetAllPatientDeletedAsync(CancellationToken cancellationToken);
-    Task<IEnumerable<Patients>> GetAllPatientNotDeletedAsync(CancellationToken cancellationToken);
-    Task<Patients?> GetPatientByIdAsync(int id, CancellationToken cancellationToken);
-    Task<Patients?> CreatePatientAsync(Patients patients, CancellationToken cancellationToken);
-    Task<bool> UpdatePatientAsync(int id,Patients patients, CancellationToken cancellationToken);
-    Task<bool> DeletePatientAsync(int id, CancellationToken cancellationToken);
-    Task<bool> TogglePatientExiteAsync(int id, CancellationToken cancellationToken);
-    Task<(bool IsSuccess, string Message, decimal? NewAmount)> UpdateMaxMedicalExpensesAsync(int id, UpdateExpensesRequest newMaxMedicalExpenses,
-        CancellationToken cancellationToken = default);
+    Task<Result<IEnumerable<Patient>>> GetAllPatientsAsync(CancellationToken cancellationToken);
+    Task<Result<IEnumerable<Patient>>> GetAllPatientDeletedAsync(CancellationToken cancellationToken);
+    Task<Result<IEnumerable<Patient>>> GetAllPatientNotDeletedAsync(CancellationToken cancellationToken);
+    Task<Result<ResponePatient>> GetPatientByIdAsync(int id, CancellationToken cancellationToken);
+    Task<Result<ResponePatient>> CreatePatientAsync(int departmentId,RequestPatient patients, CancellationToken cancellationToken);
+    Task<Result<ResponePatient>> UpdatePatientAsync(int departmentId,int id, RequestPatient patients, CancellationToken cancellationToken);
+    Task<Result> DeletePatientAsync(int id, CancellationToken cancellationToken);
+    Task<Result> TogglePatientExiteAsync(int id, CancellationToken cancellationToken);
+    Task<Result<decimal>> UpdateMaxMedicalExpensesAsync(int id,UpdateExpensesRequest request,CancellationToken cancellationToken = default);
 
 }

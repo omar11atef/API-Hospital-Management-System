@@ -9,7 +9,7 @@ public class PatientVisit : AuditableEntity
 
     // relationship with patient (Foreign Key)
     public int PatientId { get; set; }
-    public Patients Patient { get; set; } = null!;
+    public Patient Patient { get; set; } = null!;
 
     // relationship with Doctor
     public int? DoctorId { get; set; }

@@ -1,104 +1,124 @@
-﻿namespace Hospital_Management_System.Services;
+﻿using Hospital_Management_System.Entities;
+
+namespace Hospital_Management_System.Services;
 
 public class DoctorService (ApplicationDbContext context) : IDoctorService
 {
     private readonly ApplicationDbContext _context = context;
-    /*private static readonly List<Doctor> _context = [
-        new Doctor
-        {
-            Id = 1,
-            Name = "Dr. John Smith",
-            Specialization = "Cardiology",
-            Address = "123 Main St, Cityville",
-            DateOfBirth = new DateOnly(2022, 2, 1),
-            AcademicDegree = "MD",
-            TotalHoursWorked = 1500.5m,
-            PhoneNumber = "555-1234",
-            NationalId = "A123456789"
-        },
-        new Doctor
-        {
-            Id = 2,
-            Name = "Dr. Emily Johnson",
-            Specialization = "Neurology",
-            Address = "456 Elm St, Townsville",
-            DateOfBirth = new DateOnly(2000, 2, 1),
-            AcademicDegree = "PhD",
-            TotalHoursWorked = 1200.0m,
-            PhoneNumber = "555-5678",
-            NationalId = "B987654321"
-        }
-    ];*/
-
-    public async Task<IEnumerable<Doctor>> GetAllDoctorsAsync(CancellationToken cancellationToken =default)
+    public async Task<Result<IEnumerable<Doctor>>> GetAllDoctorsAsync(CancellationToken cancellationToken =default)
     {
-        return await _context.Doctors
+        var doctors = await _context.Doctors
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+        return Result.Success<IEnumerable<Doctor>>(doctors);
     }
 
-    public async Task<IEnumerable<Doctor>> GetAllDoctorsExsitsAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<IEnumerable<Doctor>>> GetAllDoctorsExsitsAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Doctors
+        var doctors = await _context.Doctors
             .AsNoTracking()
             .Where(d => d.IsDeleted)
             .ToListAsync(cancellationToken);
+        return Result.Success<IEnumerable<Doctor>>(doctors);
     }
 
-    public async Task <Doctor?> GetDoctorByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Result<ResponeDoctor>> GetDoctorByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await _context.Doctors.FindAsync(id, cancellationToken);
+        var result = await _context.Doctors.FindAsync(id, cancellationToken);
+        return result is not null
+            ? Result.Success(result.Adapt<ResponeDoctor>())
+            : Result.Failure<ResponeDoctor>(DoctorErrors.DoctorNotFound);
     }
-    
-    public async Task<Doctor?> CreateDoctorAsync(Doctor doctor, CancellationToken cancellationToken = default)
+
+    public async Task<Result<ResponeDoctor>> CreateDoctorAsync(int departmentId,RequestDoctor doctor, CancellationToken cancellationToken = default)
     {
-        if (doctor is null)
-            return null!;
-        await _context.AddAsync(doctor, cancellationToken);
+        var departmentExists = await _context.Departments
+                .AnyAsync(d => d.Id == departmentId, cancellationToken);
+        if (!departmentExists)
+            return Result.Failure<ResponeDoctor>(DoctorErrors.DepartmentNotFound);
+
+        var exists = await _context.Doctors
+                            .AnyAsync(x => x.NationalId == doctor.NationalId, cancellationToken);
+        if (exists) return Result.Failure<ResponeDoctor>(DoctorErrors.DuplicateNationalId);
+
+        var newdoctor = doctor.Adapt<Doctor>();
+        newdoctor.DepartmentId = departmentId;
+
+        await _context.Doctors.AddAsync(newdoctor, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
-        return doctor;
+        var response = newdoctor.Adapt<ResponeDoctor>();
+        return Result.Success(response);
     }
-    
-    public async Task<Doctor?> UpdateDoctorAsync(int id, Doctor doctor, CancellationToken cancellationToken = default)
-    {
-        var DoctorToUpdate = await GetDoctorByIdAsync(id);
-        if (DoctorToUpdate is null)
-            return null;
-        if (doctor is null)
-            throw new ArgumentNullException(nameof(doctor), "Input doctor data cannot be null.");
 
+    public async Task<Result<ResponeDoctor>> UpdateDoctorAsync(int departmentId, int id, RequestDoctor doctor, CancellationToken cancellationToken = default)
+    {
+        var departmentExists = await _context.Departments
+            .AnyAsync(d => d.Id == departmentId, cancellationToken);
+        if (!departmentExists)
+            return Result.Failure<ResponeDoctor>(DoctorErrors.DepartmentNotFound);
+
+        var DoctorToUpdate = await _context.Doctors.FindAsync(id, cancellationToken);
+        if (DoctorToUpdate is null)
+            return Result.Failure<ResponeDoctor>(DoctorErrors.DoctorNotFound);
+
+        bool isDuplicateNationalId = await _context.Doctors.AnyAsync(d =>
+            d.NationalId == doctor.NationalId && d.Id != id, cancellationToken);
+        if (isDuplicateNationalId)
+            return Result.Failure<ResponeDoctor>(DoctorErrors.DuplicateNationalId);
+
+        doctor.Adapt(DoctorToUpdate);
         DoctorToUpdate.Name = doctor.Name;
         DoctorToUpdate.Specialization = doctor.Specialization;
         DoctorToUpdate.Address = doctor.Address;
         DoctorToUpdate.DateOfBirth = doctor.DateOfBirth;
         DoctorToUpdate.AcademicDegree = doctor.AcademicDegree;
-        DoctorToUpdate.TotalHoursWorked = doctor.TotalHoursWorked;
         DoctorToUpdate.PhoneNumber = doctor.PhoneNumber;
         DoctorToUpdate.NationalId = doctor.NationalId;
-        
-        await _context.SaveChangesAsync(cancellationToken);
 
-        return DoctorToUpdate;
+        DoctorToUpdate.DepartmentId = departmentId;
+        await _context.SaveChangesAsync(cancellationToken);
+        return Result.Success(DoctorToUpdate.Adapt<ResponeDoctor>());
     }
-    
-    public async Task<bool> DeleteDoctorAsync(int id, CancellationToken cancellationToken =default)
+
+    public async Task<Result> DeleteDoctorAsync(int id, CancellationToken cancellationToken =default)
     {
-        var doctor = await GetDoctorByIdAsync(id);
+        var doctor = await _context.Doctors.FindAsync(id, cancellationToken);
         if (doctor is null)
-            return false;
-        _context.Remove(doctor);
+            return Result.Failure(DoctorErrors.DoctorNotFound);
+        doctor.IsDeleted = true;
         await _context.SaveChangesAsync(cancellationToken);
-        return true;
+        return Result.Success();
     }
 
-    public async Task<bool> IsDoctorExistsAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Result> IsDoctorExistsAsync(int id, CancellationToken cancellationToken = default)
     {
-        var doctor = await GetDoctorByIdAsync(id);
+        var doctor = await _context.Doctors.FindAsync(id, cancellationToken);
         if(doctor is null)
-            return false;
+            return Result.Failure(DoctorErrors.DoctorNotFound);
         doctor.IsDeleted = !doctor.IsDeleted;
         await _context.SaveChangesAsync(cancellationToken);
-        return true;
+        return Result.Success();
     }
+
+    public async Task<Result<ResponseDoctorWithAppointments>> GetDoctorScheduleByIdAsync(int doctorId, CancellationToken cancellationToken)
+    {
+        var doctor = await _context.Doctors
+            .AsNoTracking()
+            .Include(d => d.Department) 
+            .Include(d => d.Appointments.Where(a => !a.IsDeleted)) 
+            .ThenInclude(a => a.Patient)
+            .FirstOrDefaultAsync(d => d.Id == doctorId, cancellationToken);
+
+        if (doctor is null)
+            return Result.Failure<ResponseDoctorWithAppointments>(DoctorErrors.DoctorNotFound);
+
+        doctor.Appointments = doctor.Appointments.OrderBy(a => a.AppointmentDate).ToList();
+
+        var response = doctor.Adapt<ResponseDoctorWithAppointments>();
+
+        return Result.Success(response);
+    }
+
+   
 
 }

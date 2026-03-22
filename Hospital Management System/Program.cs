@@ -1,11 +1,17 @@
 using Hospital_Management_System;
-
+using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDependencies(builder.Configuration);
 /*builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();*/
+
+// Logging
+builder.Host.UseSerilog((context, loggerConfiguration) =>
+{
+     loggerConfiguration.ReadFrom.Configuration(context.Configuration);
+});
 
 var app = builder.Build();
 
@@ -18,8 +24,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
-//app.MapIdentityApi<ApplicationUser>();
 
 app.MapControllers();
+app.UseExceptionHandler();
 
 app.Run();

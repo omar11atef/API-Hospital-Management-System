@@ -1,11 +1,12 @@
 ﻿namespace Hospital_Management_System.Persistence.EntitiesConfigrations;
 
-public class PatientRoomConfiguration : IEntityTypeConfiguration<PatientRooms>
+public class PatientRoomConfiguration : IEntityTypeConfiguration<PatientRoom>
 {
-    public void Configure(EntityTypeBuilder<PatientRooms> builder)
+    public void Configure(EntityTypeBuilder<PatientRoom> builder)
     {
         // Primary Key
         builder.HasKey(pr => pr.Id);
+        
 
         //(Patient -> PatientRooms)
         builder.HasOne(pr => pr.Patient)

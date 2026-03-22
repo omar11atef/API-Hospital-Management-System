@@ -1,97 +1,104 @@
-﻿using Azure;
-using Hospital_Management_System.Entities;
-
-namespace Hospital_Management_System.Controllers;
+﻿namespace Hospital_Management_System.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-
+[Authorize]
 public class DoctorsController(IDoctorService doctorServices) : ControllerBase
 {
-    
-    private readonly IDoctorService _doctorServices= doctorServices;
-    [Authorize]
+
+    private readonly IDoctorService _doctorServices = doctorServices;
+
 
     // GET All Doctors
     [HttpGet]
     public async Task<IActionResult> GetAllDoctors(CancellationToken cancellationToken = default)
     {
         var doctors = await _doctorServices.GetAllDoctorsAsync(cancellationToken);
-        var respone = doctors.Adapt<IEnumerable<ResponeDoctor>>();
+        var response = doctors.Value.Adapt<IEnumerable<ResponeDoctor>>();
 
-        return Ok(respone);
+        return doctors.IsSuccess
+            ? Ok(response)
+            : doctors.ToProblem(StatusCodes.Status400BadRequest);
     }
     // GET All Doctors Exsits
     [HttpGet("Doctors Exsits")]
     public async Task<IActionResult> GetAllDoctorsExsits(CancellationToken cancellationToken = default)
     {
         var doctors = await _doctorServices.GetAllDoctorsExsitsAsync(cancellationToken);
-        var respone = doctors.Adapt<IEnumerable<ResponeDoctor>>();
-        return Ok(respone);
+        var response = doctors.Value.Adapt<IEnumerable<ResponeDoctor>>();
+        return doctors.IsSuccess
+           ? Ok(response)
+           : doctors.ToProblem(StatusCodes.Status400BadRequest);
     }
-
 
     // GET Doctor by ID
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetDoctorById([FromRoute] int id, CancellationToken cancellationToken = default)
     {
+        var DoctoerRsult = await _doctorServices.GetDoctorByIdAsync(id, cancellationToken);
         
-        var doctor = await _doctorServices.GetDoctorByIdAsync(id, cancellationToken);
-        if (doctor == null)
-            return NotFound();
-        var respone = doctor.Adapt<IEnumerable<ResponeDoctor>>();
-        return Ok(respone);
-        
+        return DoctoerRsult.IsSuccess
+            ? Ok(DoctoerRsult.Value)
+            : DoctoerRsult.ToProblem(StatusCodes.Status404NotFound);
     }
-    
+
+ 
     // POST Create a new Doctor
-    [HttpPost("Create New Doctor")]
-    public async Task <IActionResult> CreateDoctor([FromBody] RequestDoctor doctor, CancellationToken cancellationToken = default)
+    [HttpPost("/api/departments/{departmentId:int}/[controller]")]
+    public async Task<IActionResult> CreateDoctor([FromRoute]int departmentId,[FromBody] RequestDoctor doctor, CancellationToken cancellationToken = default)
     {
-        if (_doctorServices is null)
-            return NotFound();
-
-        var createdDoctor = await _doctorServices.CreateDoctorAsync(doctor.Adapt<Doctor>(),cancellationToken); ;
-        if (createdDoctor == null)
-            return BadRequest();
-
-        return CreatedAtAction(nameof(GetDoctorById), new { id = createdDoctor.Id }, createdDoctor.Adapt<ResponeDoctor>());
+        var createdDoctor = await _doctorServices.CreateDoctorAsync(departmentId, doctor, cancellationToken);
+        //var response = createdDoctor.Adapt<ResponeDoctor>();
+        if (createdDoctor.IsSuccess)
+            return CreatedAtAction(nameof(GetDoctorById), new { id = createdDoctor.Value.Id }, createdDoctor.Value);
+        return createdDoctor.Error.Equals(DoctorErrors.DepartmentNotFound)
+           ? createdDoctor.ToProblem(StatusCodes.Status404NotFound)
+           : createdDoctor.ToProblem(StatusCodes.Status400BadRequest);
     }
-    
+
     //Put Update Doctor
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateDoctor([FromRoute] int id, [FromBody] RequestDoctor doctor, CancellationToken cancellationToken = default)
+    [HttpPut("/api/departments/{departmentId:int}/[controller]/{id:int}")]
+    public async Task<IActionResult> UpdateDoctor([FromRoute] int departmentId, [FromRoute] int id, [FromBody] RequestDoctor doctor, CancellationToken cancellationToken = default)
     {
-        if (_doctorServices == null)
-            return NotFound();
-        var updatedDoctor = await _doctorServices.UpdateDoctorAsync(id, doctor.Adapt<Doctor>(),cancellationToken);
-        if (updatedDoctor == null)
-            return NotFound();
-        return NoContent();
+        var updatedDoctor = await _doctorServices.UpdateDoctorAsync(departmentId, id, doctor, cancellationToken);
+        if (updatedDoctor.IsSuccess)
+            return NoContent();
+        return updatedDoctor.Error.Equals(DoctorErrors.DuplicateNationalId)
+            ? updatedDoctor.ToProblem(StatusCodes.Status409Conflict)
+            : updatedDoctor.ToProblem(StatusCodes.Status404NotFound);
     }
-    
+
     // DELETE Doctor
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteDoctor([FromRoute] int id, CancellationToken cancellationToken = default)
     {
-        if (_doctorServices == null)
-            return NotFound();
-
         var result = await _doctorServices.DeleteDoctorAsync(id, cancellationToken);
-        if (!result) return NotFound();
-        return NoContent();
+
+        return result.IsSuccess
+            ? NoContent()
+            : result.ToProblem(StatusCodes.Status404NotFound);
     }
 
     // Make Doctor Is Existed
     [HttpPut("{id}/ToggleExisted")]
     public async Task<IActionResult> IsDoctorExists([FromRoute] int id, CancellationToken cancellationToken = default)
     {
-        if (_doctorServices == null)
-            return NotFound();
-
         var result = await _doctorServices.IsDoctorExistsAsync(id, cancellationToken);
-        if (!result) return NotFound();
-        return NoContent();
+
+        return result.IsSuccess
+            ? NoContent()
+            : result.ToProblem(StatusCodes.Status404NotFound);
+    }
+
+    // GET Doctor Appointments 
+    [HttpGet("{id:int}/schedule")]
+    public async Task<IActionResult> GetDoctorSchedule([FromRoute] int id, CancellationToken cancellationToken = default)
+    {
+        var result = await _doctorServices.GetDoctorScheduleByIdAsync(id, cancellationToken);
+
+        return result.IsSuccess
+            ? Ok(result.Value)
+            : result.ToProblem(StatusCodes.Status404NotFound);
     }
 
 }

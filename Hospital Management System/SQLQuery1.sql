@@ -1,3 +1,3 @@
-﻿DELETE from Patients
+﻿DELETE from Appointments
 
-DBCC CHECKIDENT ('Patients', RESEED, 0);   
+DBCC CHECKIDENT ('Appointments', RESEED, 0);   

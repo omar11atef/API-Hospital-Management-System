@@ -18,10 +18,12 @@ public class DoctorRequestValidation :AbstractValidator<RequestDoctor>
             .NotEmpty()
             .Must(BeAValidAge)
             .WithMessage("{PropertyName} Is InValid ,Age must be at least 18 years old.");
-
-        RuleFor(x=>x.CreatedAt)
-            .GreaterThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today))
-            .When(x => x.CreatedAt.HasValue); 
+        RuleFor(x => x.Email)
+            .EmailAddress().WithMessage("Pleas Enter Correct Email");
+        RuleFor(x => x.Gender)
+            .NotEmpty().WithMessage("Gender is required.")
+            .Must(g => g == "Male" || g == "Female")
+            .WithMessage("Gender must be either 'Male' or 'Female'.");
     }
     private bool BeAValidAge(DateOnly? dateOfBirth)
     {
@@ -36,6 +38,9 @@ public class DoctorRequestValidation :AbstractValidator<RequestDoctor>
 
         return age >= 18;
     }
-
-
 }
+
+
+
+
+

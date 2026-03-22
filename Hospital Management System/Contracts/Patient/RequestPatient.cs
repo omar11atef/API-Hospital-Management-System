@@ -6,8 +6,16 @@ public record RequestPatient
       string Address,
       DateOnly DateOfBirth,
       string PhoneNumber,
-      Gender Gender,
+      string Gender,
       string NationalId,
       decimal MaxMedicalExpenses,
       string DiseaseName
+);
+
+public record PatientAppointment
+(
+    int AppointmentId,
+    string DoctorName,
+    string AppointmentDate,
+    string Status
 );

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -11,13 +12,15 @@ public class AuthorController(IAuthorService authorService, IOptions<JwtOptions>
     private readonly JwtOptions _jwtoptions=jwtoptions.Value;
     private readonly IConfiguration _configuration = configuration;
     [HttpPost("")]
-    public async Task<IActionResult> IsAuthorCorrectAysun([FromBody] AuthorRequest authorRequest
+    public async Task<IActionResult> IsAuthorCorrectAysun([FromBody] LoginRequest  authorRequest
         , CancellationTokenSource cancellationTokenSource)
     {
-        var authorResponse = await _authorService.IsAuthorCorrectAysun(authorRequest.Email, authorRequest.Password, cancellationTokenSource);
-        if (authorResponse == null)
-            return Unauthorized("Invalid Email Or Password");
-        return Ok(authorResponse);
+        var AuthorRuslt = await _authorService.IsAuthorCorrectAysun(authorRequest.Email, authorRequest.Password, cancellationTokenSource);
+       
+        return AuthorRuslt.IsSuccess
+            ? Ok(AuthorRuslt.Value)
+            : BadRequest(AuthorRuslt.Error);
+            ;
     }
 
     [HttpGet("TestOptionPatterns")]
