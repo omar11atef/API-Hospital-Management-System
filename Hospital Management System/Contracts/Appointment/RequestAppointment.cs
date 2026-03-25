@@ -11,7 +11,7 @@ public record RequestAppointment
 );
 
 public sealed record AppointmentRequest(
-    DateTime AppointmentDate,
+    DateTime? AppointmentDate,
     string Status,
     string Notes,
     string ReasonForVisit

@@ -6,7 +6,6 @@ public class RequestAppointmentValidation : AbstractValidator<RequestAppointment
     {
 
         RuleFor(x => x.AppointmentDate)
-            .NotEmpty().WithMessage("Appointment date is required.")
             .GreaterThan(DateTime.UtcNow).WithMessage("Appointment date must be in the future.");
 
         RuleFor(x => x.ReasonForVisit)

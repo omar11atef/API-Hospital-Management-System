@@ -16,4 +16,8 @@ public class Room : AuditableEntity
     // RelationShip With Department :
     public int DepartmentId { get; set; }
     public Department Department { get; set; } = default!;
+
+    // RelationShip with Appointment :
+   // public int AppointmentId { get; set; }
+    //public Appointment Appointment { get; set; } = default!;
 }

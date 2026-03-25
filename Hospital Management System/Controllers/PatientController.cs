@@ -3,7 +3,7 @@ namespace Hospital_Management_System.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+//[Authorize]
 public class PatientController(IPatientsServices patients, IConfiguration configuration , IAppointmentService appointmentService) : ControllerBase
 {
     private readonly IPatientsServices _patients = patients;
@@ -117,8 +117,7 @@ public class PatientController(IPatientsServices patients, IConfiguration config
     [HttpGet("{patientId:int}/appointments")]
     public async Task<IActionResult> GetPatientAppointments([FromRoute] int patientId,CancellationToken cancellationToken = default)
     {
-        var result = await _appointmentService
-            .GetAppointmentsByPatientAsync(patientId, cancellationToken);
+        var result = await _appointmentService.GetAppointmentsByPatientAsync(patientId, cancellationToken);
 
         return result.IsSuccess
             ? Ok(result.Value)

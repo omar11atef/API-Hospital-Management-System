@@ -13,12 +13,11 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     [HttpGet]
     public async Task<IActionResult> GetAllAppointments(CancellationToken cancellationToken = default)
     {
-        var appointment = await _appointmentService.GetAllAppointmentsAsync(cancellationToken);
-        var response = appointment.Value.Adapt<IEnumerable<AppointmentResponse>>();
+        var result = await _appointmentService.GetAllAppointmentsAsync(cancellationToken);
 
-        return appointment.IsSuccess
-            ? Ok(response)
-            : appointment.ToProblem(StatusCodes.Status400BadRequest);
+        return result.IsSuccess
+            ? Ok(result.Value)
+            : result.ToProblem(StatusCodes.Status400BadRequest);
     }
 
     // GET api/appointments/deleted
@@ -60,10 +59,21 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
 
     // PUT api/appointments/{id}
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateAppointment([FromRoute] int id,[FromBody] AppointmentRequest request,CancellationToken cancellationToken = default)
+    /*public async Task<IActionResult> UpdateAppointment([FromRoute] int id,[FromBody] AppointmentRequest request,CancellationToken cancellationToken = default)
     {
         var result = await _appointmentService.UpdateAppointmentAsync(id, request, cancellationToken);
 
+        if (result.IsSuccess)
+            return NoContent();
+
+        return result.Error.Equals(AppointmentErrors.NotFound)
+            ? result.ToProblem(StatusCodes.Status404NotFound)
+            : result.ToProblem(StatusCodes.Status409Conflict);
+    }*/
+
+    public async Task<IActionResult> UpdateAppointment([FromRoute] int id,[FromBody] AppointmentRequest request,CancellationToken cancellationToken = default)
+    {
+        var result = await _appointmentService.UpdateAppointmentAsync(id, request, cancellationToken);
         if (result.IsSuccess)
             return NoContent();
 
@@ -78,12 +88,9 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
     {
         var result = await _appointmentService.DeleteAppointmentAsync(id, cancellationToken);
 
-        if (result.IsSuccess)
-            return NoContent();
-
-        return result.Error.Equals(AppointmentErrors.NotFound)
-            ? result.ToProblem(StatusCodes.Status404NotFound)
-            : result.ToProblem(StatusCodes.Status409Conflict);
+        return result.IsSuccess
+           ? NoContent()
+           : result.ToProblem(StatusCodes.Status404NotFound);
     }
 
     // POST api/appointments/{id}/toggle-status
@@ -95,6 +102,22 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
         return result.IsSuccess
             ? NoContent()
             : result.ToProblem(StatusCodes.Status404NotFound);
+    }
+
+
+    [HttpPut("/api/rooms/appointments/{appointmentId:int}/cancel")]
+    public async Task<IActionResult> CancelAppointment([FromRoute] int appointmentId, CancellationToken cancellationToken = default)
+    {
+        var result = await _appointmentService.CancelAppointmentAsync(appointmentId, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return result.Error.Equals(RoomErrors.AppointmentNotFound)
+                ? result.ToProblem(StatusCodes.Status404NotFound)
+                : result.ToProblem(StatusCodes.Status409Conflict);
+        }
+
+        return Ok(result.Value);
     }
 
 }

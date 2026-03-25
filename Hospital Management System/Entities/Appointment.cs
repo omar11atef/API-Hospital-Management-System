@@ -19,6 +19,7 @@ public sealed class Appointment : AuditableEntity
     public int PatientId { get; set; }
     public Patient Patient { get; set; } = default!;
 
+    public ICollection<PatientRoom> PatientRooms { get; set; } = [];
 
 
 

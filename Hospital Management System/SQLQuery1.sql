@@ -1,3 +1,3 @@
-﻿DELETE from Appointments
+﻿DELETE from Departments
 
-DBCC CHECKIDENT ('Appointments', RESEED, 0);   
+DBCC CHECKIDENT ('Departments', RESEED, 0);   

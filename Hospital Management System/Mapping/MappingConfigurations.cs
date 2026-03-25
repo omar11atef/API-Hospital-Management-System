@@ -41,8 +41,14 @@ public class MappingConfigurations : IRegister
             .Map(dest => dest.DoctorName, src => src.Name)
             .Map(dest => dest.Specialization, src => src.Specialization)
             .Map(dest => dest.Appointments, src => src.Appointments.Adapt<IEnumerable<AppointmentResponse>>());
-    
 
-}
+        TypeAdapterConfig<Appointment, AppointmentResponse>.NewConfig()
+            .Map(dest => dest.AppointmentDate,
+                 src => src.AppointmentDate.ToString("yyyy-MM-dd HH:mm"))
+            .Map(dest => dest.SlotDisplay,
+                 src => $"{src.AppointmentDate.Hour:D2}:00 – {src.AppointmentDate.Hour + 1:D2}:00");
+
+
+    }
 }
 

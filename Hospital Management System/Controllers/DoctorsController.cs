@@ -1,12 +1,16 @@
-﻿namespace Hospital_Management_System.Controllers;
+﻿using Hospital_Management_System.Entities;
+
+namespace Hospital_Management_System.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
-public class DoctorsController(IDoctorService doctorServices) : ControllerBase
+//[Authorize]
+public class DoctorsController(IDoctorService doctorServices , IAppointmentService appointmentService) : ControllerBase
 {
 
     private readonly IDoctorService _doctorServices = doctorServices;
+    private readonly IAppointmentService _appointmentService = appointmentService;
+
 
 
     // GET All Doctors
@@ -94,8 +98,8 @@ public class DoctorsController(IDoctorService doctorServices) : ControllerBase
     [HttpGet("{id:int}/schedule")]
     public async Task<IActionResult> GetDoctorSchedule([FromRoute] int id, CancellationToken cancellationToken = default)
     {
-        var result = await _doctorServices.GetDoctorScheduleByIdAsync(id, cancellationToken);
-
+        //var result = await _doctorServices.GetDoctorScheduleByIdAsync(id, cancellationToken);
+        var result = await _appointmentService.GetAppointmentsByDoctorAsync(id, cancellationToken);
         return result.IsSuccess
             ? Ok(result.Value)
             : result.ToProblem(StatusCodes.Status404NotFound);

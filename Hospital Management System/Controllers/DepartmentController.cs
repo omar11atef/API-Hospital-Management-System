@@ -4,7 +4,7 @@ namespace Hospital_Management_System.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
+//[Authorize]
 public class DepartmentController(IDepartmentService departmentService) : ControllerBase
 {
     private readonly IDepartmentService _departmentService = departmentService;

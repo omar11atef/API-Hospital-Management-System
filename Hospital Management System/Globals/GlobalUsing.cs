@@ -32,6 +32,8 @@ global using Hospital_Management_System.Contracts.Patient;
 global using Hospital_Management_System.Abstractions;
 global using Hospital_Management_System.Errors;
 global using Hospital_Management_System.Contracts.Appointment;
+global using Hospital_Management_System.Contracts.Room;
+
 
 
 

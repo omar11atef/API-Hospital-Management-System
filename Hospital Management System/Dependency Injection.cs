@@ -12,8 +12,10 @@ public static class Dependency_Injection
         services
             .AddMaspterConfig()
             .AddFluentValidationConfig();
+        // Add Hybrid Cacahing :
+        services.AddHybridCache();
 
-        // CROS:
+        //CROS:
         var config = configuration.GetSection("AllowedOrigin").Get<string[]>();
         services.AddCors(options =>
             options.AddDefaultPolicy(builder =>
@@ -24,8 +26,6 @@ public static class Dependency_Injection
             )
         );
 
-        
-
         // Add Connection String :
         var connectionString = configuration.GetConnectionString("DefaultConnection") ??
               throw new InvalidOperationException("Connect String 'DefaultConnection' Has Not Found");
@@ -35,6 +35,7 @@ public static class Dependency_Injection
         services.AddScoped<IPatientsServices, PatientsService>();
         services.AddScoped<IDepartmentService, DepartmentService>();
         services.AddScoped<IAppointmentService, AppointmentService>();
+        services.AddScoped<IRoomService, RoomService>();
 
 
         // Add Global Exception Handler
