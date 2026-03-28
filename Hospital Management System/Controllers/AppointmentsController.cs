@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿namespace Hospital_Management_System.Controllers;
 
-namespace Hospital_Management_System.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class AppointmentsController(IAppointmentService appointmentService) : ControllerBase
@@ -59,18 +57,6 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
 
     // PUT api/appointments/{id}
     [HttpPut("{id:int}")]
-    /*public async Task<IActionResult> UpdateAppointment([FromRoute] int id,[FromBody] AppointmentRequest request,CancellationToken cancellationToken = default)
-    {
-        var result = await _appointmentService.UpdateAppointmentAsync(id, request, cancellationToken);
-
-        if (result.IsSuccess)
-            return NoContent();
-
-        return result.Error.Equals(AppointmentErrors.NotFound)
-            ? result.ToProblem(StatusCodes.Status404NotFound)
-            : result.ToProblem(StatusCodes.Status409Conflict);
-    }*/
-
     public async Task<IActionResult> UpdateAppointment([FromRoute] int id,[FromBody] AppointmentRequest request,CancellationToken cancellationToken = default)
     {
         var result = await _appointmentService.UpdateAppointmentAsync(id, request, cancellationToken);

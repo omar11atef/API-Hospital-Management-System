@@ -1,4 +1,6 @@
 ﻿using Azure;
+using Hospital_Management_System.Services;
+using QuestPDF.Fluent;
 namespace Hospital_Management_System.Controllers;
 
 [Route("api/[controller]")]
@@ -122,6 +124,33 @@ public class PatientController(IPatientsServices patients, IConfiguration config
         return result.IsSuccess
             ? Ok(result.Value)
             : result.ToProblem(StatusCodes.Status404NotFound);
+    }
+    // GET download-report for Appointment patients:
+    [HttpGet("{patientId:int}/download-report")]
+    public async Task<IActionResult> DownloadPatientReport([FromRoute] int patientId,CancellationToken cancellationToken = default)
+    {
+        var result = await _patients.GetPatientReportDataAsync(patientId, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return result.Error.Equals(PatientErrors.PatientNotFound) 
+                ? result.ToProblem(StatusCodes.Status404NotFound)
+                : result.ToProblem(StatusCodes.Status400BadRequest);
+        }
+        var logoPath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", "logo.png");
+        byte[]? logoBytes = null;
+
+        if (System.IO.File.Exists(logoPath))
+        {
+            logoBytes = await System.IO.File.ReadAllBytesAsync(logoPath, cancellationToken);
+        }
+
+        var document = new PatientReportDocument(result.Value, logoBytes!);
+        byte[] pdfBytes = document.GeneratePdf();
+        string safePatientName = result.Value.PatientName.Replace(" ", "_");
+        string fileName = $"MedicalReport_{safePatientName}_{DateTime.Now:yyyyMMdd}.pdf";
+
+        return File(pdfBytes, "application/pdf", fileName);
     }
 
 }

@@ -48,7 +48,22 @@ public class MappingConfigurations : IRegister
             .Map(dest => dest.SlotDisplay,
                  src => $"{src.AppointmentDate.Hour:D2}:00 – {src.AppointmentDate.Hour + 1:D2}:00");
 
+        //--- After use ProjectToType to mapping in Room Service :
+        config.NewConfig<Room, RoomAppointmentsResponse>()
+            .Map(dest => dest.RoomId, src => src.Id)
+            .Map(dest => dest.DepartmentName, src => src.Department != null ? src.Department.Name : "Unknown")
+            .Map(dest => dest.Appointments, src => src.PatientRooms
+                .Where(pr => !pr.IsDeleted && pr.Appointment != null && !pr.Appointment.IsDeleted)
+                .Select(pr => pr.Appointment)
+                .OrderBy(a => a.AppointmentDate));
 
-    }
+        config.NewConfig<Appointment, RoomAppointmentItem>()
+            .Map(dest => dest.DoctorName, src => src.Doctor != null ? src.Doctor.Name : "Unknown")
+            .Map(dest => dest.PatientName, src => src.Patient != null ? src.Patient.Name : "Unknown")
+            .Map(dest => dest.AppointmentDate, src => src.AppointmentDate);
+
+
+
+}
 }
 

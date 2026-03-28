@@ -8,14 +8,18 @@ public static class Dependency_Injection
 
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         services.AddOpenApi();
-
+        // Add Maspter , FluentValidation Method DI :
         services
             .AddMaspterConfig()
             .AddFluentValidationConfig();
+
         // Add Hybrid Cacahing :
         services.AddHybridCache();
 
-        //CROS:
+        // Read From MailSettings in appsetting :
+        services.Configure<MailSettings>(configuration.GetSection(nameof(MailSettings)));
+
+        /*CROS:
         var config = configuration.GetSection("AllowedOrigin").Get<string[]>();
         services.AddCors(options =>
             options.AddDefaultPolicy(builder =>
@@ -24,11 +28,12 @@ public static class Dependency_Injection
                 .AllowAnyMethod()
                 .AllowAnyHeader()
             )
-        );
+        );*/
 
         // Add Connection String :
         var connectionString = configuration.GetConnectionString("DefaultConnection") ??
               throw new InvalidOperationException("Connect String 'DefaultConnection' Has Not Found");
+        // Add My Service with has's Interfaceing :
         services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
         services.AddScoped<IDoctorService, DoctorService>();
         services.AddScoped<IAuthorService, AuthorService>();
@@ -36,12 +41,13 @@ public static class Dependency_Injection
         services.AddScoped<IDepartmentService, DepartmentService>();
         services.AddScoped<IAppointmentService, AppointmentService>();
         services.AddScoped<IRoomService, RoomService>();
+        // Tell it to use the old Microsoft UI interface
+        services.AddScoped<IEmailSender, EmailService>();
 
-
-        // Add Global Exception Handler
+        // Add Global Exception Handler:
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
-        // Add Author Token Config
+        // Add Author Token Config Method :
         services.AddAuthorTokenConfig(configuration);
 
         return services;
@@ -64,24 +70,23 @@ public static class Dependency_Injection
         return services;
     }
 
-    public static IServiceCollection AddAuthorTokenConfig(this IServiceCollection services ,
-        IConfiguration configuration)
+    public static IServiceCollection AddAuthorTokenConfig(this IServiceCollection services ,IConfiguration configuration)
     {
        
         services
           .AddIdentity<ApplicationUser, IdentityRole>()
-          .AddEntityFrameworkStores<ApplicationDbContext>();
+          .AddEntityFrameworkStores<ApplicationDbContext>()
+          .AddDefaultTokenProviders();
+
         services.AddSingleton<IJwtProvider, JwtProvider>();
         
        services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.OptionName));
         var JwtSetting = configuration.GetSection(JwtOptions.OptionName).Get<JwtOptions>();
         services.AddAuthentication(options =>
         {
-
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
-
             .AddJwtBearer(options => 
             {
                 options.SaveToken = true;
@@ -95,6 +100,18 @@ public static class Dependency_Injection
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtSetting?.key!))
                 };
             });
+
+        // Confirmation on identityOptions for Regiter :
+        services.Configure<IdentityOptions>(options =>
+        {
+            options.Password.RequiredLength = 8;
+            options.SignIn.RequireConfirmedEmail = true;
+            //options.User.AllowedUserNameCharacters ="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+            options.User.RequireUniqueEmail = true;
+            options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+        }
+
+      );
 
         return services;
     }

@@ -3,4 +3,5 @@
 public interface IJwtProvider
 {
     (string token, int expiry) GentrateJwtToken(ApplicationUser applicationUser);
+    string? ValidationToken(string token);
 }

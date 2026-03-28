@@ -114,4 +114,32 @@ public class PatientsService(ApplicationDbContext context) : IPatientsServices
         await _context.SaveChangesAsync(cancellationToken);
         return Result.Success(existingPatient.MaxMedicalExpenses);
     }
+
+    public async Task<Result<PatientPdfReportData>> GetPatientReportDataAsync(int patientId, CancellationToken cancellationToken = default)
+    {
+        var patientData = await _context.Patients
+            .AsNoTracking()
+            .Where(p => p.Id == patientId && !p.IsDeleted)
+            .Select(p => new PatientPdfReportData(
+                p.Id,
+                p.Name,
+                DateTime.UtcNow,
+                p.Appointments.Where(a => !a.IsDeleted)
+                    .OrderByDescending(a => a.AppointmentDate)
+                    .Select(a => new PatientReportAppointmentItem(
+                        a.AppointmentDate.ToString("yyyy-MM-dd HH:mm"),
+                        a.Doctor != null ? a.Doctor.Name : "N/A",
+                        a.Doctor != null && a.Doctor.Department != null ? a.Doctor.Department.Name : "N/A",
+                        // Fetch Room Number from PatientRooms link
+                        a.PatientRooms.Where(pr => !pr.IsDeleted).Select(pr => pr.Room.RoomNumber).FirstOrDefault() ?? "No Room",
+                        a.Status
+                    )).ToList()
+            ))
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (patientData is null)
+            return Result.Failure<PatientPdfReportData>(PatientErrors.PatientNotFound);
+
+        return Result.Success(patientData);
+    }
 }

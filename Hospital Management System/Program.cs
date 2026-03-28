@@ -13,7 +13,8 @@ builder.Host.UseSerilog((context, loggerConfiguration) =>
     loggerConfiguration.ReadFrom.Configuration(context.Configuration);
 });
 
-
+// Add this at the very beginning of your Program.cs
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
 var app = builder.Build();
 
@@ -32,7 +33,9 @@ app.UseExceptionHandler();
 
 app.Run();
 
-/*var builder = WebApplication.CreateBuilder(args);
+/*using Hospital_Management_System;
+using Serilog;
+var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDependencies(builder.Configuration);
 
 builder.Host.UseSerilog((context, loggerConfiguration) =>
@@ -48,17 +51,15 @@ builder.Services.AddCors(options => {
 
 var app = builder.Build();
 
-// ✅ ترتيب صحيح
 app.UseDeveloperExceptionPage();
 app.UseExceptionHandler();
 app.UseSerilogRequestLogging();
 
-// ✅ Swagger بدون شرط
 app.MapOpenApi();
 app.UseSwaggerUI(option => option.SwaggerEndpoint("/openapi/v1.json", "v1"));
 
 app.UseHttpsRedirection();
-app.UseCors("AllowAll");        // ✅ مرة واحدة فقط
+app.UseCors("AllowAll");       
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

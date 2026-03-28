@@ -7,5 +7,7 @@ public record AuthorResponse
     string LastName,
     string? Email,
     string Token,
-    int expiration
+    int ExpiresIn,
+    string RefreshToken,
+    DateTime RefreshTokenExpiration
 );

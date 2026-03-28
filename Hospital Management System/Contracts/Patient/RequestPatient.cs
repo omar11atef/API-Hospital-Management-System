@@ -19,3 +19,20 @@ public record PatientAppointment
     string AppointmentDate,
     string Status
 );
+
+public record PatientPdfReportData(
+    int PatientId,
+    string PatientName,
+    //string Email,
+    //string BloodType,
+    DateTime GeneratedAt,
+    List<PatientReportAppointmentItem> Appointments
+);
+
+public record PatientReportAppointmentItem(
+    string Date,
+    string DoctorName,
+    string DepartmentName,
+    string RoomNumber,
+    string Status
+);

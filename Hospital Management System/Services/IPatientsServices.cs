@@ -12,4 +12,6 @@ public interface IPatientsServices
     Task<Result> TogglePatientExiteAsync(int id, CancellationToken cancellationToken);
     Task<Result<decimal>> UpdateMaxMedicalExpensesAsync(int id,UpdateExpensesRequest request,CancellationToken cancellationToken = default);
 
+    Task<Result<PatientPdfReportData>> GetPatientReportDataAsync(int patientId, CancellationToken cancellationToken = default);
+
 }

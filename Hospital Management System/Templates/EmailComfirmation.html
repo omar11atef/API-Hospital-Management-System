@@ -1,0 +1,497 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="supported-color-schemes" content="light dark" />
+    <title>Verify your email address - Valerio</title>
+    <style type="text/css" rel="stylesheet" media="all">
+        /* Base ------------------------------ */
+        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+
+        body {
+            width: 100% !important;
+            height: 100%;
+            margin: 0;
+            -webkit-text-size-adjust: none;
+            background-color: #f4faf9; /* Soft teal-tinted gray */
+            color: #334155;
+        }
+
+        a {
+            color: #009ca6; /* Brand Teal */
+            text-decoration: none;
+        }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+            a img {
+                border: none;
+            }
+
+        td {
+            word-break: break-word;
+        }
+
+        .preheader {
+            display: none !important;
+            visibility: hidden;
+            mso-hide: all;
+            font-size: 1px;
+            line-height: 1px;
+            max-height: 0;
+            max-width: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        /* Type ------------------------------ */
+        body,
+        td,
+        th {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #0f172a;
+            font-size: 24px;
+            font-weight: 700;
+            text-align: left;
+            line-height: 1.25;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #0f172a;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        h3 {
+            margin-top: 0;
+            color: #0f172a;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        td,
+        th {
+            font-size: 16px;
+        }
+
+        p,
+        ul,
+        ol,
+        blockquote {
+            margin: 0.4em 0 1.5em;
+            font-size: 16px;
+            line-height: 1.625;
+            color: #475569;
+        }
+
+            p.sub {
+                font-size: 14px;
+                color: #64748b;
+                line-height: 1.5;
+            }
+
+        /* Utilities ------------------------------ */
+        .align-right {
+            text-align: right;
+        }
+
+        .align-left {
+            text-align: left;
+        }
+
+        .align-center {
+            text-align: center;
+        }
+
+        .u-margin-bottom-none {
+            margin-bottom: 0;
+        }
+
+        /* Buttons ------------------------------ */
+        .button {
+            background-color: #009ca6; /* Brand Teal */
+            border-top: 14px solid #009ca6;
+            border-right: 28px solid #009ca6;
+            border-bottom: 14px solid #009ca6;
+            border-left: 28px solid #009ca6;
+            display: inline-block;
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 156, 166, 0.25), 0 2px 4px -1px rgba(0, 156, 166, 0.15);
+            -webkit-text-size-adjust: none;
+            box-sizing: border-box;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.2s ease-in-out;
+        }
+
+            .button:hover {
+                background-color: #00848c;
+                border-color: #00848c;
+                text-decoration: none;
+            }
+
+        /* Code Box ------------------------------ */
+        .verification-code-container {
+            margin: 20px 0 35px;
+        }
+
+        .verification-code-cell {
+            background-color: #f0fdfa; /* Light mint/teal */
+            border: 2px dashed #2dd4bf; /* Teal border */
+            border-radius: 8px;
+            padding: 20px 40px;
+            text-align: center;
+        }
+
+        .verification-code {
+            color: #0f766e; /* Dark Teal */
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 10px;
+            margin: 0;
+            display: block;
+        }
+
+        .code-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #0d9488;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* Layout Structure ------------------------------ */
+        .email-wrapper {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            -premailer-width: 100%;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+            background-color: #f4faf9;
+        }
+
+        .email-content {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            -premailer-width: 100%;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+        }
+
+        /* Masthead ----------------------- */
+        .email-masthead {
+            padding: 45px 0 25px;
+            text-align: center;
+        }
+
+        .email-masthead_name {
+            font-size: 28px;
+            font-weight: 800;
+            color: #009ca6; /* Brand Teal */
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .email-masthead_slogan {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #38b04a; /* Brand Green */
+            letter-spacing: 3px;
+            margin-top: 6px;
+            text-transform: uppercase;
+        }
+
+        /* Body ------------------------------ */
+        .email-body {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            -premailer-width: 100%;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+        }
+
+        .email-body_inner {
+            width: 570px;
+            margin: 0 auto;
+            padding: 0;
+            -premailer-width: 570px;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px -1px rgba(0, 156, 166, 0.08);
+            border: 1px solid #e2e8f0;
+            border-top: 5px solid #009ca6; /* Brand Teal Top Accent */
+            overflow: hidden;
+        }
+
+        .content-cell {
+            padding: 45px;
+        }
+
+        .body-action {
+            width: 100%;
+            margin: 30px auto;
+            padding: 0;
+            -premailer-width: 100%;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+            text-align: center;
+        }
+
+        .body-sub {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+            .body-sub p {
+                margin-bottom: 8px;
+            }
+
+        /* Footer ------------------------------ */
+        .email-footer {
+            width: 570px;
+            margin: 0 auto;
+            padding: 0;
+            -premailer-width: 570px;
+            -premailer-cellpadding: 0;
+            -premailer-cellspacing: 0;
+            text-align: center;
+        }
+
+            .email-footer .content-cell {
+                padding: 30px 45px;
+            }
+
+            .email-footer p {
+                color: #94a3b8;
+                font-size: 13px;
+                line-height: 1.6;
+                margin-bottom: 0;
+            }
+
+        /* Media Queries ------------------------------ */
+        @media only screen and (max-width: 600px) {
+            .email-body_inner,
+            .email-footer {
+                width: 100% !important;
+                border-radius: 0 !important;
+                border-left: none !important;
+                border-right: none !important;
+            }
+
+            .content-cell {
+                padding: 30px 20px !important;
+            }
+
+            .button {
+                width: 100% !important;
+                text-align: center !important;
+            }
+
+            .verification-code-cell {
+                padding: 20px 15px !important;
+            }
+
+            .verification-code {
+                font-size: 28px !important;
+                letter-spacing: 6px !important;
+            }
+        }
+
+        /* Dark Mode ------------------------------ */
+        @media (prefers-color-scheme: dark) {
+            body,
+            .email-wrapper {
+                background-color: #0f172a !important;
+            }
+
+            .email-body_inner {
+                background-color: #1e293b !important;
+                border-color: #334155 !important;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+            }
+
+            h1, h2, h3 {
+                color: #f8fafc !important;
+            }
+
+            p, ul, ol, blockquote {
+                color: #cbd5e1 !important;
+            }
+
+                p.sub {
+                    color: #94a3b8 !important;
+                }
+
+            .email-footer p {
+                color: #64748b !important;
+            }
+
+            .verification-code-cell {
+                background-color: #115e59 !important; /* Dark teal bg */
+                border-color: #0d9488 !important;
+            }
+
+            .verification-code {
+                color: #ccfbf1 !important; /* Light teal text */
+            }
+
+            .code-label {
+                color: #5eead4 !important;
+            }
+
+            .body-sub {
+                border-top-color: #334155 !important;
+            }
+        }
+
+        :root {
+            color-scheme: light dark;
+            supported-color-schemes: light dark;
+        }
+    </style>
+    <!--[if mso]>
+      <style type="text/css">
+        .f-fallback {
+          font-family: Arial, sans-serif;
+        }
+        .email-body_inner {
+          border: 1px solid #e2e8f0;
+        }
+      </style>
+    <![endif]-->
+</head>
+<body>
+    <span class="preheader">
+        Use this secure link or code to verify your email address. Valid for 24 hours.
+    </span>
+    <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+        <tr>
+            <td align="center">
+                <table class="email-content" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+
+                    <!-- Header -->
+                    <tr>
+                        <td class="email-masthead">
+                            <a href="https://example.com" class="f-fallback email-masthead_name">
+                                VALERIO
+                                <span class="email-masthead_slogan">Your Health Our Passion</span>
+                            </a>
+                        </td>
+                    </tr>
+
+                    <!-- Email Body -->
+                    <tr>
+                        <td class="email-body" width="570" cellpadding="0" cellspacing="0">
+                            <table class="email-body_inner" align="center" width="570" cellpadding="0" cellspacing="0" role="presentation">
+                                <!-- Body content -->
+                                <tr>
+                                    <td class="content-cell">
+                                        <div class="f-fallback">
+                                            <h1>Hi {{name}},</h1>
+                                            <p>
+                                                Welcome to Valerio! We're dedicated to making your health our passion. To get started and secure your account, please verify your email address.
+                                            </p>
+
+                                            <!-- Action: Verification Button -->
+                                            <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                                <tr>
+                                                    <td align="center">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
+                                                            <tr>
+                                                                <td align="center">
+                                                                    <a href="{{action_url}}" class="f-fallback button" target="_blank">Click Here to Verify Email</a>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                            <p align="center" style="margin-bottom: 5px;">Or, enter this 6-digit code in the app:</p>
+
+                                            <!-- Action: Verification Code Box -->
+                                            <table class="verification-code-container" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                                <tr>
+                                                    <td align="center">
+                                                        <table width="auto" border="0" cellspacing="0" cellpadding="0" role="presentation">
+                                                            <tr>
+                                                                <td align="center" class="verification-code-cell">
+                                                                    <span class="f-fallback code-label">Verification Code</span>
+                                                                    <span class="f-fallback verification-code">{{code}}</span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                            <p>If you didn't create an account with Valerio, please safely ignore this email.</p>
+
+                                            <p>Stay healthy,<br /><strong>The Valerio Team</strong></p>
+
+                                            <!-- Sub copy -->
+                                            <table class="body-sub" role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td>
+                                                        <p class="f-fallback sub">
+                                                            If you’re having trouble clicking the verification button, copy and paste the URL below into your web browser:
+                                                        </p>
+                                                        <p class="f-fallback sub" style="word-break: break-all;">
+                                                            <a href="{{action_url}}">{{action_url}}</a>
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td>
+                            <table class="email-footer" align="center" width="570" cellpadding="0" cellspacing="0" role="presentation">
+                                <tr>
+                                    <td class="content-cell" align="center">
+                                        <p class="f-fallback sub align-center">
+                                            © 2026 Valerio Medical. All rights reserved.
+                                            <br />1234 Clinic Road, Healthcare District.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

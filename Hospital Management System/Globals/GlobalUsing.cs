@@ -20,6 +20,12 @@ global using System.Security.Claims;
 global using System.Text;
 global using Microsoft.AspNetCore.Http.HttpResults;
 global using System.ComponentModel.DataAnnotations;
+global using Microsoft.AspNetCore.Identity.Data;
+global using Microsoft.Extensions.Options;
+global using MimeKit;
+global using MailKit.Net.Smtp;
+global using MailKit.Security;
+global using Microsoft.AspNetCore.Identity.UI.Services;
 
 global using Hospital_Management_System.Authentication;
 global using Hospital_Management_System.Entities;
@@ -33,6 +39,9 @@ global using Hospital_Management_System.Abstractions;
 global using Hospital_Management_System.Errors;
 global using Hospital_Management_System.Contracts.Appointment;
 global using Hospital_Management_System.Contracts.Room;
+global using Hospital_Management_System.Abstractions.Consts;
+global using Hospital_Management_System.Settings;
+global using Hospital_Management_System.Helpers;
 
 
 

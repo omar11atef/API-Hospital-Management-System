@@ -1,0 +1,5 @@
+* Room service :*
+GetDoctorAppointmentRoomAsync and GetPatientAppointmentRoomAsync --> Donot used ProjectToType 
+because that mapping not read data correct so the result in text (500 server Error)
+
+
