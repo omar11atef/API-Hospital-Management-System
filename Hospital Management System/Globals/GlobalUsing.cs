@@ -42,6 +42,11 @@ global using Hospital_Management_System.Contracts.Room;
 global using Hospital_Management_System.Abstractions.Consts;
 global using Hospital_Management_System.Settings;
 global using Hospital_Management_System.Helpers;
+global using Hospital_Management_System.Contracts.Admin;
+global using Hospital_Management_System.Contracts.User;
+global using Hospital_Management_System.Extensions;
+global using Hospital_Management_System.Authentication.Filter;
+global using Hospital_Management_System.Contracts.Roles;
 
 
 

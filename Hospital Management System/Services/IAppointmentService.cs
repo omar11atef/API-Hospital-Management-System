@@ -13,4 +13,5 @@ public interface IAppointmentService
     Task<Result> ToggleAppointmentStatusAsync(int id,CancellationToken cancellationToken = default);
 
     Task<Result<CancelAppointmentResponse>> CancelAppointmentAsync(int appointmentId, CancellationToken cancellationToken = default);
+    Task<Result<PatientHistoryResponse>> GetPatientAppointmentHistoryAsync(int patientId, CancellationToken cancellationToken = default);
 }

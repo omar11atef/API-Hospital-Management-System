@@ -37,6 +37,59 @@ namespace Hospital_Management_System.Persistence.Migrations
                     b.ToTable("DoctorPatient");
                 });
 
+            modelBuilder.Entity("Hospital_Management_System.Entities.ApplicationRoles", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "92b75286-d8f8-4061-9995-e6e23ccdee94",
+                            ConcurrencyStamp = "f51e5a91-bced-49c2-8b86-c2e170c0846c",
+                            IsDefault = false,
+                            IsDeleted = false,
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "9eaa03df-8e4f-4161-85de-0f6e5e30bfd4",
+                            ConcurrencyStamp = "5ee6bc12-5cb0-4304-91e7-6a00744e042a",
+                            IsDefault = true,
+                            IsDeleted = false,
+                            Name = "Member",
+                            NormalizedName = "MEMBER"
+                        });
+                });
+
             modelBuilder.Entity("Hospital_Management_System.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -60,6 +113,9 @@ namespace Hospital_Management_System.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDisable")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -110,6 +166,27 @@ namespace Hospital_Management_System.Persistence.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "9D51D5CD223E41CD823738A34DE01376",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "F12F8501A4E743889E7D2BE1979E43A7",
+                            Email = "AdminValerio@Hosptial-Valerio-System.com",
+                            EmailConfirmed = true,
+                            FirstName = "ValerioSystem",
+                            IsDisable = false,
+                            LastName = "ValerioSystem",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMINVALERIO@HOSPTIAL-VALERIO-SYSTEM.COM",
+                            NormalizedUserName = "ADMINVALERIO@HOSPTIAL-VALERIO-SYSTEM.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEK1Ypsch0DKBxOEVci5VRaYQ4YhD+EFAwsPWjseCM0CgYdAMmqWU0eCn5Cp5jKkYKA==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "601AB38C202F40C281B183149DBACC08",
+                            TwoFactorEnabled = false,
+                            UserName = "AdminValerio@Hosptial-Valerio-System.com"
+                        });
                 });
 
             modelBuilder.Entity("Hospital_Management_System.Entities.Appointment", b =>
@@ -556,33 +633,6 @@ namespace Hospital_Management_System.Persistence.Migrations
                     b.ToTable("Rooms");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
-
-                    b.ToTable("AspNetRoles", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -606,6 +656,386 @@ namespace Hospital_Management_System.Persistence.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ClaimType = "permissions",
+                            ClaimValue = "Roles:read",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ClaimType = "permissions",
+                            ClaimValue = "Roles:read:single",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ClaimType = "permissions",
+                            ClaimValue = "Roles:create",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ClaimType = "permissions",
+                            ClaimValue = "Roles:Update",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ClaimType = "permissions",
+                            ClaimValue = "Users:read",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ClaimType = "permissions",
+                            ClaimValue = "Users:create",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ClaimType = "permissions",
+                            ClaimValue = "Users:Update",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ClaimType = "permissions",
+                            ClaimValue = "Users:delete",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ClaimType = "permissions",
+                            ClaimValue = "Appointments:read",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ClaimType = "permissions",
+                            ClaimValue = "Appointments:read-deleted",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            ClaimType = "permissions",
+                            ClaimValue = "Appointments:read-single",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            ClaimType = "permissions",
+                            ClaimValue = "Appointments:read-history",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            ClaimType = "permissions",
+                            ClaimValue = "Appointments:create",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            ClaimType = "permissions",
+                            ClaimValue = "Appointments:update",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            ClaimType = "permissions",
+                            ClaimValue = "Appointments:remove",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            ClaimType = "permissions",
+                            ClaimValue = "Appointments:toggle",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            ClaimType = "permissions",
+                            ClaimValue = "Appointments:cancel",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            ClaimType = "permissions",
+                            ClaimValue = "Author:login",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            ClaimType = "permissions",
+                            ClaimValue = "Author:register",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            ClaimType = "permissions",
+                            ClaimValue = "Author:confirm-email",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            ClaimType = "permissions",
+                            ClaimValue = "Author:resend-confirm-email",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            ClaimType = "permissions",
+                            ClaimValue = "Author:logout",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            ClaimType = "permissions",
+                            ClaimValue = "Department:read",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            ClaimType = "permissions",
+                            ClaimValue = "Department:read-single",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            ClaimType = "permissions",
+                            ClaimValue = "Department:create",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            ClaimType = "permissions",
+                            ClaimValue = "Department:update",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            ClaimType = "permissions",
+                            ClaimValue = "Doctor:read",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            ClaimType = "permissions",
+                            ClaimValue = "Doctor:read-exists",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            ClaimType = "permissions",
+                            ClaimValue = "Doctor:read-single",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            ClaimType = "permissions",
+                            ClaimValue = "Doctor:read-schedule",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            ClaimType = "permissions",
+                            ClaimValue = "Doctor:read",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            ClaimType = "permissions",
+                            ClaimValue = "Doctor:update",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            ClaimType = "permissions",
+                            ClaimValue = "Doctor:Remove",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            ClaimType = "permissions",
+                            ClaimValue = "Doctor:toggle",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            ClaimType = "permissions",
+                            ClaimValue = "Patient:read",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            ClaimType = "permissions",
+                            ClaimValue = "Patient:read-deleted",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            ClaimType = "permissions",
+                            ClaimValue = "Patient:read-not-deleted",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 38,
+                            ClaimType = "permissions",
+                            ClaimValue = "Patient:read-single",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 39,
+                            ClaimType = "permissions",
+                            ClaimValue = "Patient:read-appointments",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 40,
+                            ClaimType = "permissions",
+                            ClaimValue = "Patient:download-report",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 41,
+                            ClaimType = "permissions",
+                            ClaimValue = "Patient:create",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            ClaimType = "permissions",
+                            ClaimValue = "Patient:update",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            ClaimType = "permissions",
+                            ClaimValue = "Patient:remove",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            ClaimType = "permissions",
+                            ClaimValue = "Patient:toggle",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 45,
+                            ClaimType = "permissions",
+                            ClaimValue = "Patient:update-expenses",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 46,
+                            ClaimType = "permissions",
+                            ClaimValue = "Room:read",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 47,
+                            ClaimType = "permissions",
+                            ClaimValue = "Room:read-single",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 48,
+                            ClaimType = "permissions",
+                            ClaimValue = "Room:read-appointments",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 49,
+                            ClaimType = "permissions",
+                            ClaimValue = "Room:read-doctor",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 50,
+                            ClaimType = "permissions",
+                            ClaimValue = "Room:read-patient",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 51,
+                            ClaimType = "permissions",
+                            ClaimValue = "Room:create",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 52,
+                            ClaimType = "permissions",
+                            ClaimValue = "Room:update",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 53,
+                            ClaimType = "permissions",
+                            ClaimValue = "Room:remove",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        },
+                        new
+                        {
+                            Id = 54,
+                            ClaimType = "permissions",
+                            ClaimValue = "Room:assign",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -668,6 +1098,13 @@ namespace Hospital_Management_System.Persistence.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "9D51D5CD223E41CD823738A34DE01376",
+                            RoleId = "92b75286-d8f8-4061-9995-e6e23ccdee94"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -732,7 +1169,7 @@ namespace Hospital_Management_System.Persistence.Migrations
 
                             b1.HasKey("UserId", "Id");
 
-                            b1.ToTable("RefershTokens", (string)null);
+                            b1.ToTable("RefreshTokens", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
@@ -839,7 +1276,7 @@ namespace Hospital_Management_System.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("Hospital_Management_System.Entities.ApplicationRoles", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -866,7 +1303,7 @@ namespace Hospital_Management_System.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("Hospital_Management_System.Entities.ApplicationRoles", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)

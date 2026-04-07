@@ -2,18 +2,25 @@
 
 public static class ProblemExtesctions
 {
-    public static ObjectResult ToProblem(this Result result,int code)
+    public static ObjectResult ToProblem(this Result result)
     {
-        if (result.IsSuccess) throw new InvalidOperationException("Can't connver failuer to succes");
-        var ResultPromble = Results.Problem(statusCode: code);
-        var ResultPrombleDetailes = ResultPromble.GetType().GetProperty(nameof(ProblemDetails))!.GetValue(ResultPromble) as ProblemDetails;
-        ResultPrombleDetailes!.Extensions = new Dictionary<string, object?>
+        if (result.IsSuccess)
+            throw new InvalidOperationException("Cannot convert success result to a problem");
+
+        var problem = Results.Problem(statusCode: result.Error.StatusCode);
+        var problemDetails = problem.GetType().GetProperty(nameof(ProblemDetails))!.GetValue(problem) as ProblemDetails;
+
+        problemDetails!.Extensions = new Dictionary<string, object?>
         {
             {
-                "error",new[]{result.Error}
+                "errors", new[]
+                {
+                    result.Error.Code,
+                    result.Error.Descrpition
+                }
             }
         };
-      
-        return new ObjectResult(ResultPrombleDetailes);
+
+        return new ObjectResult(problemDetails);
     }
 }

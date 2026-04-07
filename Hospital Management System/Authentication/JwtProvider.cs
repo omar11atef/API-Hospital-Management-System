@@ -1,22 +1,28 @@
-﻿using Microsoft.Extensions.Options;
-using System.Text;
+﻿using Hospital_Management_System.Abstractions.Consts;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+
 
 namespace Hospital_Management_System.Authentication;
 
 public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
 {
     private readonly JwtOptions _options = options.Value;
-    public (string token, int expiry) GentrateJwtToken(ApplicationUser applicationUser)
+    public (string token, int expiry) GentrateJwtToken(ApplicationUser applicationUser , IEnumerable<string> roles,IEnumerable<string> permissions)
     {
-
         // Cliams
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, applicationUser.UserName!),
+            //new Claim(JwtRegisteredClaimNames.Sub, applicationUser.UserName!),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(ClaimTypes.NameIdentifier, applicationUser.Id),
-            new Claim(ClaimTypes.Name, applicationUser.UserName!)
+            new Claim(ClaimTypes.Name, applicationUser.UserName!),
+            new (nameof(roles),JsonSerializer.Serialize(roles),JsonClaimValueTypes.JsonArray),
+            new (nameof(permissions),JsonSerializer.Serialize(permissions),JsonClaimValueTypes.JsonArray),
         };
+       
+
         // Key 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.key));
         // Credentials

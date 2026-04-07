@@ -1,11 +1,16 @@
-﻿namespace Hospital_Management_System;
+﻿using Hospital_Management_System.Authentication.Filter;
+using Microsoft.AspNetCore.Authentication.Cookies;
+
+namespace Hospital_Management_System;
 
 public static class Dependency_Injection 
 {
     public static IServiceCollection AddDependencies(this IServiceCollection services , IConfiguration configuration)
     {
+        System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
         services.AddControllers();
-
+        services.AddEndpointsApiExplorer();
+        
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         services.AddOpenApi();
         // Add Maspter , FluentValidation Method DI :
@@ -41,6 +46,12 @@ public static class Dependency_Injection
         services.AddScoped<IDepartmentService, DepartmentService>();
         services.AddScoped<IAppointmentService, AppointmentService>();
         services.AddScoped<IRoomService, RoomService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IRoleService, RoleService>();
+
+
+        services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+        services.AddScoped<IValidator<DashboardSummaryRequest>, DashboardSummaryRequestValidator>();
         // Tell it to use the old Microsoft UI interface
         services.AddScoped<IEmailSender, EmailService>();
 
@@ -73,20 +84,64 @@ public static class Dependency_Injection
     public static IServiceCollection AddAuthorTokenConfig(this IServiceCollection services ,IConfiguration configuration)
     {
        
-        services
-          .AddIdentity<ApplicationUser, IdentityRole>()
+        /*services
+          .AddIdentity<ApplicationUser, ApplicationRoles>()
           .AddEntityFrameworkStores<ApplicationDbContext>()
-          .AddDefaultTokenProviders();
+          .AddDefaultTokenProviders();*/
+
+        services
+            .AddIdentity<ApplicationUser, ApplicationRoles>
+                (options =>
+                {
+                    options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider;
+                })
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
+        services.AddTransient<IAuthorizationHandler, PermissionAuthorizationHandler>();
+        services.AddTransient<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+
 
         services.AddSingleton<IJwtProvider, JwtProvider>();
-        
-       services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.OptionName));
+
+        /*services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.OptionName));
+         var JwtSetting = configuration.GetSection(JwtOptions.OptionName).Get<JwtOptions>();
+         services.AddAuthentication(options =>
+         {
+             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+         })
+             .AddJwtBearer(options => 
+             {
+                 options.SaveToken = true;
+                 options.TokenValidationParameters = new TokenValidationParameters
+                 {
+                     ValidateIssuerSigningKey = true,
+                     ValidateIssuer = true,
+                     ValidateAudience = true,
+                     ValidIssuer = JwtSetting?.issuer ,
+                     ValidAudience = JwtSetting?.audience,
+                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtSetting?.key!))
+                 };
+             });*/
+
+        services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.OptionName));
         var JwtSetting = configuration.GetSection(JwtOptions.OptionName).Get<JwtOptions>();
         services.AddAuthentication(options =>
         {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            //options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            //options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultAuthenticateScheme = AuthSchemes.JwtOrCookie;
+            options.DefaultChallengeScheme = AuthSchemes.JwtOrCookie;
         })
+            .AddCookie(options =>
+            {
+                options.Cookie.Name = "AuthToken";
+                options.Cookie.HttpOnly = true; // Security: prevents JS access
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Requires HTTPS
+                options.Cookie.SameSite = SameSiteMode.Strict; // Prevents CSRF
+                options.ExpireTimeSpan = TimeSpan.FromDays(7);
+            })
             .AddJwtBearer(options => 
             {
                 options.SaveToken = true;
@@ -99,7 +154,21 @@ public static class Dependency_Injection
                     ValidAudience = JwtSetting?.audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtSetting?.key!))
                 };
-            });
+            })
+            .AddPolicyScheme(AuthSchemes.JwtOrCookie, "JWT_OR_COOKIE", options =>
+            {
+                options.ForwardDefaultSelector = context =>
+                {
+                    var authorization = context.Request.Headers["Authorization"].FirstOrDefault();
+
+                    if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer "))
+                        return JwtBearerDefaults.AuthenticationScheme;
+
+                    return CookieAuthenticationDefaults.AuthenticationScheme;
+                };
+            }); ;
+
+                
 
         // Confirmation on identityOptions for Regiter :
         services.Configure<IdentityOptions>(options =>
@@ -115,5 +184,8 @@ public static class Dependency_Injection
 
         return services;
     }
-
+    public static class AuthSchemes
+    {
+        public const string JwtOrCookie = "JWT_OR_COOKIE";
+    }
 }

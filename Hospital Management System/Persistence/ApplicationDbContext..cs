@@ -1,7 +1,7 @@
 ﻿namespace Hospital_Management_System.Persistence;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options , IHttpContextAccessor httpContextAccessor) :
-    IdentityDbContext<ApplicationUser>(options)
+    IdentityDbContext<ApplicationUser,ApplicationRoles,string>(options)
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     public DbSet<Doctor> Doctors { get; set; }

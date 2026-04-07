@@ -3,7 +3,7 @@ using Hospital_Management_System.Services;
 using QuestPDF.Fluent;
 namespace Hospital_Management_System.Controllers;
 
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiController]
 //[Authorize]
 public class PatientController(IPatientsServices patients, IConfiguration configuration , IAppointmentService appointmentService) : ControllerBase
@@ -20,7 +20,7 @@ public class PatientController(IPatientsServices patients, IConfiguration config
         var respone = patient.Value.Adapt<IEnumerable<ResponePatient>>();
         return patient.IsSuccess
             ? Ok(respone)
-            : patient.ToProblem(StatusCodes.Status400BadRequest);
+            : patient.ToProblem();
     }
 
     // GET All Patients Deleted
@@ -31,7 +31,7 @@ public class PatientController(IPatientsServices patients, IConfiguration config
         var respone = patient.Value.Adapt<IEnumerable<ResponePatient>>();
         return patient.IsSuccess
             ? Ok(respone)
-            : patient.ToProblem(StatusCodes.Status400BadRequest);
+            : patient.ToProblem();
     }
 
     // GET All Patients Not Deleted
@@ -42,7 +42,7 @@ public class PatientController(IPatientsServices patients, IConfiguration config
         var respone = patient.Value.Adapt<IEnumerable<ResponePatient>>();
         return patient.IsSuccess
             ? Ok(respone)
-            : patient.ToProblem(StatusCodes.Status400BadRequest);
+            : patient.ToProblem();
     }
 
     // GET Patient By Id
@@ -52,33 +52,29 @@ public class PatientController(IPatientsServices patients, IConfiguration config
         var patient = await _patients.GetPatientByIdAsync(id, cancellationToken);
         return patient.IsSuccess
             ? Ok(patient.Value)
-            : patient.ToProblem(StatusCodes.Status404NotFound); 
+            : patient.ToProblem(); 
     }
 
     //Post Create New Patient
-    [HttpPost("/api/departments/{departmentId:int}/[controller]/AddNewPatient")]
+    [HttpPost("/departments/{departmentId:int}/[controller]/AddNewPatient")]
     public async Task<IActionResult> CreateNewPatient([FromRoute] int departmentId, [FromBody] RequestPatient request, CancellationToken cancellationToken = default)
     {
         var createpatient = await _patients.CreatePatientAsync(departmentId, request, cancellationToken);
-        if (createpatient.IsSuccess)
-            return CreatedAtAction(nameof(GetPatientById), new { createpatient.Value.id }, createpatient.Value);
 
-        return createpatient.Error.Equals(PatientErrors.DepartmentNotFound)
-           ? createpatient.ToProblem(StatusCodes.Status404NotFound)
-           : createpatient.ToProblem(StatusCodes.Status400BadRequest);
+        return createpatient.IsSuccess
+           ? CreatedAtAction(nameof(GetPatientById), new { createpatient.Value.id }, createpatient.Value)
+           : createpatient.ToProblem();
     }
 
     // Put Update Patient
-    [HttpPut("/api/departments/{departmentId:int}/[controller]/UpdatePatient/{id:int}")]
+    [HttpPut("/departments/{departmentId:int}/[controller]/UpdatePatient/{id:int}")]
     public async Task<IActionResult> UpdatePatient([FromRoute] int departmentId, [FromRoute] int id, [FromBody] RequestPatient Updaterequest, CancellationToken cancellationToken = default)
     {
         var result = await _patients.UpdatePatientAsync(departmentId, id, Updaterequest, cancellationToken);
-        if (result.IsSuccess)
-            return NoContent();
 
-        return result.Error.Equals(PatientErrors.DuplicateNationalId)
-            ? result.ToProblem(StatusCodes.Status409Conflict)
-            : result.ToProblem(StatusCodes.Status404NotFound);
+        return result.IsSuccess
+            ? NoContent()
+            : result.ToProblem();
     }
 
     // Delete Patient
@@ -88,7 +84,7 @@ public class PatientController(IPatientsServices patients, IConfiguration config
         var result = await _patients.DeletePatientAsync(id, cancellationToken);
         return result.IsSuccess
              ? NoContent()
-             : result.ToProblem(StatusCodes.Status404NotFound);
+             : result.ToProblem();
     }
 
     // Toggle Patient Exite
@@ -98,7 +94,7 @@ public class PatientController(IPatientsServices patients, IConfiguration config
         var result = await _patients.TogglePatientExiteAsync(id, cancellationToken);
         return result.IsSuccess
              ? NoContent()
-             : result.ToProblem(StatusCodes.Status404NotFound);
+             : result.ToProblem();
     }
 
     // Update Max Medical Expenses
@@ -107,12 +103,10 @@ public class PatientController(IPatientsServices patients, IConfiguration config
     {
         var result = await _patients
             .UpdateMaxMedicalExpensesAsync(id, request, cancellationToken);
-        if (result.IsSuccess)
-            return NoContent();
 
-        return result.Error.Equals(PatientErrors.PatientNotFound)
-            ? result.ToProblem(StatusCodes.Status404NotFound)
-            : result.ToProblem(StatusCodes.Status400BadRequest);
+        return result.IsSuccess
+            ? NoContent()
+            : result.ToProblem();
     }
 
     // GET api/patients/{patientId}/appointments
@@ -123,7 +117,7 @@ public class PatientController(IPatientsServices patients, IConfiguration config
 
         return result.IsSuccess
             ? Ok(result.Value)
-            : result.ToProblem(StatusCodes.Status404NotFound);
+            : result.ToProblem();
     }
     // GET download-report for Appointment patients:
     [HttpGet("{patientId:int}/download-report")]
@@ -131,12 +125,12 @@ public class PatientController(IPatientsServices patients, IConfiguration config
     {
         var result = await _patients.GetPatientReportDataAsync(patientId, cancellationToken);
 
-        if (!result.IsSuccess)
-        {
-            return result.Error.Equals(PatientErrors.PatientNotFound) 
-                ? result.ToProblem(StatusCodes.Status404NotFound)
-                : result.ToProblem(StatusCodes.Status400BadRequest);
-        }
+        if (result.IsSuccess)
+        
+            return result.IsSuccess
+                ? Ok(result.Value)
+                : result.ToProblem();
+       
         var logoPath = Path.Combine(Directory.GetCurrentDirectory(), "Assets", "logo.png");
         byte[]? logoBytes = null;
 

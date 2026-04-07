@@ -84,16 +84,19 @@ public class AppointmentService (ApplicationDbContext context) : IAppointmentSer
     public async Task<Result<AppointmentResponse>> CreateAppointmentAsync(int doctorId,int patientId,AppointmentRequest request,CancellationToken cancellationToken = default)
     {
         var appointmentDate = request.AppointmentDate ?? DateTime.UtcNow;
+        if (appointmentDate < DateTime.UtcNow.AddMinutes(-5))
+            return Result.Failure<AppointmentResponse>(AppointmentErrors.CannotBookInPast);
 
         var slotStart = new DateTime(
-            appointmentDate.Year,
-            appointmentDate.Month,
-            appointmentDate.Day,
-            appointmentDate.Hour,
-            0, 0,
-            DateTimeKind.Utc);
+        appointmentDate.Year,
+        appointmentDate.Month,
+        appointmentDate.Day,
+        appointmentDate.Hour,
+        appointmentDate.Minute, 
+        0,
+        DateTimeKind.Utc);
 
-        var slotEnd = slotStart.AddHours(1); // نهاية الـ Slot
+        var slotEnd = slotStart.AddHours(1);
 
         var doctorExists = await _context.Doctors
             .AnyAsync(d => d.Id == doctorId && !d.IsDeleted, cancellationToken);
@@ -105,11 +108,13 @@ public class AppointmentService (ApplicationDbContext context) : IAppointmentSer
         if (!patientExists)
             return Result.Failure<AppointmentResponse>(AppointmentErrors.PatientNotFound);
 
+        var overlapLimitStart = slotStart.AddHours(-1); 
+
         var hasConflict = await _context.Appointments
             .AnyAsync(a =>
                 a.DoctorId == doctorId &&
                 !a.IsDeleted &&
-                a.AppointmentDate >= slotStart &&
+                a.AppointmentDate > overlapLimitStart && 
                 a.AppointmentDate < slotEnd,
             cancellationToken);
 
@@ -120,8 +125,8 @@ public class AppointmentService (ApplicationDbContext context) : IAppointmentSer
         {
             DoctorId = doctorId,
             PatientId = patientId,
-            AppointmentDate = appointmentDate,  
-            Status = request.Status,
+            AppointmentDate = slotStart,  
+            Status = request.Status ?? "Scheduled",
             Notes = request.Notes,
             ReasonForVisit = request.ReasonForVisit
         };
@@ -198,6 +203,71 @@ public class AppointmentService (ApplicationDbContext context) : IAppointmentSer
         appointment.IsDeleted = !appointment.IsDeleted;
         await _context.SaveChangesAsync(cancellationToken);
         return Result.Success();
+    }
+    public async Task<Result<PatientHistoryResponse>> GetPatientAppointmentHistoryAsync(int patientId, CancellationToken cancellationToken = default)
+    {
+        
+        var patient = await _context.Patients
+            .FirstOrDefaultAsync(p => p.Id == patientId && !p.IsDeleted, cancellationToken);
+
+        if (patient is null)
+            return Result.Failure<PatientHistoryResponse>(PatientErrors.PatientNotFound);
+
+        var patientName = patient.Name;
+
+        var rawAppointments = await _context.Appointments
+            .IgnoreQueryFilters() 
+            .AsNoTracking()
+            .Where(a => a.PatientId == patientId) 
+            .Select(a => new
+            {
+                a.Id,
+                DoctorName = a.Doctor.Name,
+                PatientName = patientName,
+                a.AppointmentDate,
+                a.Status,
+                a.Notes,
+                a.ReasonForVisit,
+                a.IsDeleted
+            })
+            .ToListAsync(cancellationToken);
+
+
+        var now = DateTime.UtcNow;
+
+        var upcoming = rawAppointments
+            .Where(a => a.AppointmentDate >= now)
+            .OrderBy(a => a.AppointmentDate)
+            .Select(a => new AppointmentResponse(
+                a.Id,
+                a.DoctorName,
+                a.PatientName,
+                a.AppointmentDate.ToString("yyyy-MM-dd HH:mm"),
+                BuildSlotDisplay(a.AppointmentDate),
+                a.Status,
+                a.Notes,
+                a.ReasonForVisit,
+                a.IsDeleted
+            )).ToList();
+
+        var past = rawAppointments
+            .Where(a => a.AppointmentDate < now)
+            .OrderByDescending(a => a.AppointmentDate)
+            .Select(a => new AppointmentResponse(
+                a.Id,
+                a.DoctorName,
+                a.PatientName,
+                a.AppointmentDate.ToString("yyyy-MM-dd HH:mm"),
+                BuildSlotDisplay(a.AppointmentDate),
+                a.Status,
+                a.Notes,
+                a.ReasonForVisit,
+                a.IsDeleted
+            )).ToList();
+
+        var response = new PatientHistoryResponse(PatientId: patientId,PatientName: patientName,UpcomingAppointments: upcoming,PastAppointments: past);
+
+        return Result.Success(response);
     }
 
     // Cancle Aappoitment

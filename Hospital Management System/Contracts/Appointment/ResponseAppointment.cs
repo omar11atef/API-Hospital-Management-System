@@ -37,3 +37,10 @@ public sealed record AppointmentResponse(
     bool IsDeleted
 );
 
+public record PatientHistoryResponse
+(
+    int PatientId,
+    string PatientName,
+    List<AppointmentResponse> UpcomingAppointments,
+    List<AppointmentResponse> PastAppointments
+);

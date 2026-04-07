@@ -1,3 +1,3 @@
-﻿DELETE from Departments
+﻿SELECT * FROM Room
 
-DBCC CHECKIDENT ('Departments', RESEED, 0);   
+DBCC CHECKIDENT ('Rooms', RESEED, 0);   

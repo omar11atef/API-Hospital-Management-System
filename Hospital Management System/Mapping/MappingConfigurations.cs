@@ -46,7 +46,7 @@ public class MappingConfigurations : IRegister
             .Map(dest => dest.AppointmentDate,
                  src => src.AppointmentDate.ToString("yyyy-MM-dd HH:mm"))
             .Map(dest => dest.SlotDisplay,
-                 src => $"{src.AppointmentDate.Hour:D2}:00 – {src.AppointmentDate.Hour + 1:D2}:00");
+                 src => BuildSlotDisplay(src.AppointmentDate));
 
         //--- After use ProjectToType to mapping in Room Service :
         config.NewConfig<Room, RoomAppointmentsResponse>()
@@ -62,8 +62,19 @@ public class MappingConfigurations : IRegister
             .Map(dest => dest.PatientName, src => src.Patient != null ? src.Patient.Name : "Unknown")
             .Map(dest => dest.AppointmentDate, src => src.AppointmentDate);
 
+        //User :
+        config.NewConfig<(ApplicationUser user, IList<string> useRroles), UserResponse>()
+            .Map(dest => dest, src => src.user)
+            .Map(dest => dest.Roles, src => src.useRroles);
+            
 
+        // Admin :
+       
 
-}
+    }
+    private static string BuildSlotDisplay(DateTime date)
+    {
+        return $"{date:HH\\:mm} – {date.AddHours(1):HH\\:mm}";
+    }
 }
 

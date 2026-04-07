@@ -2,12 +2,14 @@
 using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDependencies(builder.Configuration);
-/*builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();*/
 
-// Logging
+
+builder.Services.AddDependencies(builder.Configuration);
+//builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
+//    .AddEntityFrameworkStores<ApplicationDbContext>()
+//    .AddDefaultTokenProviders();
+
+// Logging:
 builder.Host.UseSerilog((context, loggerConfiguration) =>
 {
     loggerConfiguration.ReadFrom.Configuration(context.Configuration);
@@ -56,7 +58,7 @@ app.UseExceptionHandler();
 app.UseSerilogRequestLogging();
 
 app.MapOpenApi();
-app.UseSwaggerUI(option => option.SwaggerEndpoint("/openapi/v1.json", "v1"));
+app.UseSwaggerUI(option => option.SwaggerEndpoint("./openapi/v1.json", "v1"));
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");       

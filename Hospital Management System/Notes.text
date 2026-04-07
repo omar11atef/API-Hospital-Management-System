@@ -2,4 +2,24 @@
 GetDoctorAppointmentRoomAsync and GetPatientAppointmentRoomAsync --> Donot used ProjectToType 
 because that mapping not read data correct so the result in text (500 server Error)
 
+*Appointment Service *
+add expier for create appoinetment day by day 
 
+// Admin role[Admin] , permsion[Allpermssions]
+{
+  "email": "AdminValerio@Hosptial-Valerio-System.com",
+  "password": "P1@1ssword12#3"
+}
+---------------------------------------------
+// Note Memeber role[] permission[]
+user :
+{
+  "email": "OmarAtef@gmail.com",
+  "password": "P@ssword123"
+}
+---------------------------------------------
+// memeber : role[member] permssion[]
+{
+  "email": "Omar2Atef@gmail.com",
+  "password": "P@ssword1234"
+}

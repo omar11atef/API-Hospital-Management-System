@@ -1,6 +1,4 @@
-﻿
-
-namespace Hospital_Management_System.Authentication;
+﻿namespace Hospital_Management_System.Authentication;
 
 public class RegisterRequestValidator : AbstractValidator<RegisterRequestApp>
 {
